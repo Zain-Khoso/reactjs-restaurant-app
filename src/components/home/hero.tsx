@@ -1,5 +1,6 @@
 // Lib Imports
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Component Imports
 import { Button } from '@/components/shadcn/button';
@@ -8,6 +9,20 @@ import { H1, P } from '@/components/shadcn/typography';
 export function Hero() {
   return (
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center text-center px-4 py-20">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/images/hero-bg-image.webp"
+          alt="Hero background"
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-background/80 dark:bg-background/90" />
+      </div>
+
       {/* Background subtle pattern */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/5 via-background to-background" />
 
