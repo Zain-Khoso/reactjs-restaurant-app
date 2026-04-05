@@ -1,3 +1,3 @@
 export default function Home() {
-  return 'Hello World, Urban Dish';
+  return <h1>Hello World, Urban Dish</h1>;
 }
