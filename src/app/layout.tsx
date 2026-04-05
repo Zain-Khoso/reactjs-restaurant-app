@@ -1,36 +1,34 @@
 // Lib Imports
 import type { Metadata } from 'next';
 
-import { Geist, Geist_Mono } from 'next/font/google';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 // Assets
 import './globals.css';
 
-// Font Setup
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 // Metadata Setup
 export const metadata: Metadata = {
-  title: 'Urban Dish',
-  description: 'A restaurant',
+  title: {
+    default: 'Urban Dish',
+    template: '%s | Urban Dish',
+  },
+  description:
+    'Urban Dish — a culinary journey through bold flavours and unforgettable dining experiences.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
