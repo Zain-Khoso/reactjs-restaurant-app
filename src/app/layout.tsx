@@ -4,8 +4,12 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 
-// Assets
+// Asset Imports
 import './globals.css';
+
+// Component Imports
+import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 
 // Fot Setup
 const Font_Geist = Geist({
@@ -33,7 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
