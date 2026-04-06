@@ -108,7 +108,7 @@ export function Navbar() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 flex flex-col px-6">
+            <SheetContent side="right" className="w-72 flex flex-col">
               <div className="mb-8 mt-2"></div>
 
               {/* Mobile Nav Links */}
@@ -121,7 +121,7 @@ export function Navbar() {
                       rel={link.external ? 'noopener noreferrer' : undefined}
                       onClick={() => setOpen(false)}
                       className={cn(
-                        'flex items-center gap-2 rounded-md py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',
+                        'flex items-center gap-2 rounded-md py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground px-6',
                         pathname === link.href ? 'bg-accent text-primary' : 'text-muted-foreground'
                       )}
                     >
@@ -133,7 +133,7 @@ export function Navbar() {
               </ul>
 
               {/* Book a Table inside sheet */}
-              <div className="mt-auto pb-4">
+              <div className="mt-auto pb-4 px-6">
                 <Button asChild className="w-full" onClick={() => setOpen(false)}>
                   <Link href="/reservations">Book a Table</Link>
                 </Button>
