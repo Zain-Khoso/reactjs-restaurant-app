@@ -6,6 +6,7 @@ import { Button } from '@/components/shadcn/button';
 import { Separator } from '@/components/shadcn/separator';
 // Typography
 import { H2, P, SectionLabel } from '@/components/shadcn/typography';
+import { FadeIn, ScaleIn } from '../animations';
 
 const STATS = [
   { value: '40', label: 'Years of Experience' },
@@ -18,7 +19,7 @@ export function AboutSnippet() {
     <section className="py-16 px-4">
       <div className="mx-auto max-w-7xl grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
         {/* Left — Text */}
-        <div className="flex flex-col gap-6">
+        <FadeIn direction="right" className="flex flex-col gap-6">
           <div>
             <SectionLabel>About Us</SectionLabel>
             <H2 className="mt-1">Available everywhere!</H2>
@@ -51,10 +52,10 @@ export function AboutSnippet() {
           <Button asChild className="w-fit mt-2">
             <Link href="/about">Learn More</Link>
           </Button>
-        </div>
+        </FadeIn>
 
         {/* Right — Image Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        <ScaleIn className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="relative aspect-square overflow-hidden rounded-xl bg-muted">
               <Image
@@ -66,7 +67,7 @@ export function AboutSnippet() {
               />
             </div>
           ))}
-        </div>
+        </ScaleIn>
       </div>
     </section>
   );
