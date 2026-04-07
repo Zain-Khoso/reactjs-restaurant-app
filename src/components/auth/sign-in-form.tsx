@@ -20,21 +20,34 @@ export function SignInForm() {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* Left — Branding Panel */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-primary px-12 gap-8">
-        <FadeIn direction="right">
+      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden px-12 gap-8">
+        {/* Background Image */}
+        <Image
+          src="/images/auth-bg-image.webp"
+          alt="Urban Dish ambience"
+          fill
+          sizes="50vw"
+          className="object-cover"
+          priority
+        />
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center gap-6 text-center">
           <Image
-            src="/brand.png"
+            src="/brand/icon.png"
             alt="Urban Dish"
-            width={180}
-            height={60}
-            className="h-16 w-auto object-contain brightness-0 invert"
+            width={220}
+            height={80}
+            className="h-20 w-auto object-contain brightness-0 invert"
+            priority
           />
-        </FadeIn>
-        <FadeIn delay={0.1} direction="right">
-          <p className="text-primary-foreground/80 text-center text-lg max-w-sm leading-relaxed">
+          <p className="text-white/80 text-lg max-w-sm leading-relaxed">
             Welcome back. Sign in to manage your orders, reservations, and more.
           </p>
-        </FadeIn>
+        </div>
       </div>
 
       {/* Right — Form */}
