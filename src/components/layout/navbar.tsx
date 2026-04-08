@@ -3,10 +3,21 @@
 // Lib Imports
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Menu, Sun, Moon, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+// Add these imports
+import { useSession, signOut } from '@/utils/auth-client';
+import { User, LogOut, LayoutDashboard } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/shadcn/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar';
 
 // Util Imports
 import { cn } from '@/utils';
@@ -28,9 +39,12 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   React.useEffect(() => {
     setMounted(true);
@@ -73,9 +87,7 @@ export function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop Right Side */}
         <div className="hidden md:flex items-center gap-2">
-          {/* Dark Mode Toggle */}
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {mounted && theme === 'dark' ? (
               <Sun className="h-4 w-4" />
@@ -84,10 +96,49 @@ export function Navbar() {
             )}
           </Button>
 
-          {/* Book a Table CTA */}
-          <Button asChild>
-            <Link href="/reservations">Book a Table</Link>
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-2 px-2">
+                  <Avatar className="h-7 w-7">
+                    <AvatarImage src={user.image ?? ''} alt={user.name} />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                      {user.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium hidden lg:block">{user.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/account" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    My Account
+                  </Link>
+                </DropdownMenuItem>
+                {user.role === 'ADMIN' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin Panel
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => signOut({ fetchOptions: { onSuccess: () => router.push('/') } })}
+                  className="text-destructive focus:text-destructive gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild>
+              <Link href="/reservations">Book a Table</Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile Right Side */}

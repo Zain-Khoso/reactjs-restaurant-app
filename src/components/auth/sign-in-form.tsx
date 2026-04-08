@@ -3,7 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { signIn } from '@/utils/auth-client';
 // Shadcn
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
@@ -15,13 +17,44 @@ import { FadeIn } from '@/components/animations';
 import { H2, Muted } from '@/components/shadcn/typography';
 
 export function SignInForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    const { error } = await signIn.email({
+      email,
+      password,
+      callbackURL: '/',
+    });
+
+    if (error) {
+      setError(error.message ?? 'Something went wrong.');
+      setLoading(false);
+      return;
+    }
+
+    router.push('/');
+  };
+
+  const handleGoogle = async () => {
+    await signIn.social({
+      provider: 'google',
+      callbackURL: '/',
+    });
+  };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* Left — Branding Panel */}
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden px-12 gap-8">
-        {/* Background Image */}
         <Image
           src="/images/auth-bg-image.webp"
           alt="Urban Dish ambience"
@@ -30,11 +63,7 @@ export function SignInForm() {
           className="object-cover"
           priority
         />
-
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/50" />
-
-        {/* Content */}
         <div className="relative z-10 flex flex-col items-center gap-6 text-center">
           <Image
             src="/brand/icon.png"
@@ -53,14 +82,12 @@ export function SignInForm() {
       {/* Right — Form */}
       <div className="flex flex-col items-center justify-center px-6 py-16">
         <FadeIn className="w-full max-w-md flex flex-col gap-8">
-          {/* Header */}
           <div className="flex flex-col gap-2">
             <H2>Sign in</H2>
             <Muted>Enter your credentials to access your account.</Muted>
           </div>
 
-          {/* Google OAuth */}
-          <Button variant="outline" className="w-full gap-2">
+          <Button variant="outline" className="w-full gap-2" onClick={handleGoogle}>
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -82,21 +109,27 @@ export function SignInForm() {
             Continue with Google
           </Button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
             <Muted className="text-xs">or continue with email</Muted>
             <Separator className="flex-1" />
           </div>
 
-          {/* Email + Password */}
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">
                 <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Email
               </Label>
-              <Input id="email" type="email" placeholder="john@example.com" autoComplete="email" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="john@example.com"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -116,6 +149,9 @@ export function SignInForm() {
                   placeholder="••••••••"
                   autoComplete="current-password"
                   className="pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -127,12 +163,13 @@ export function SignInForm() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-2">
-              Sign In
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 
-          {/* Sign up link */}
           <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
             <Link href="/sign-up" className="text-primary hover:underline font-medium">

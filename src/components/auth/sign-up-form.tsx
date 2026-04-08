@@ -3,7 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { signUp, signIn } from '@/utils/auth-client';
 // Shadcn
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
@@ -15,14 +17,54 @@ import { FadeIn } from '@/components/animations';
 import { H2, Muted } from '@/components/shadcn/typography';
 
 export function SignUpForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirm, setConfirm] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (password !== confirm) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await signUp.email({
+      name,
+      email,
+      password,
+      callbackURL: '/',
+    });
+
+    if (error) {
+      setError(error.message ?? 'Something went wrong.');
+      setLoading(false);
+      return;
+    }
+
+    router.push('/');
+  };
+
+  const handleGoogle = async () => {
+    await signIn.social({
+      provider: 'google',
+      callbackURL: '/',
+    });
+  };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* Left — Branding Panel */}
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden px-12 gap-8">
-        {/* Background Image */}
         <Image
           src="/images/auth-bg-image.webp"
           alt="Urban Dish ambience"
@@ -31,11 +73,7 @@ export function SignUpForm() {
           className="object-cover"
           priority
         />
-
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/50" />
-
-        {/* Content */}
         <div className="relative z-10 flex flex-col items-center gap-6 text-center">
           <Image
             src="/brand/icon.png"
@@ -46,7 +84,8 @@ export function SignUpForm() {
             priority
           />
           <p className="text-white/80 text-lg max-w-sm leading-relaxed">
-            Welcome back. Sign in to manage your orders, reservations, and more.
+            Join Urban Dish today. Create an account to start ordering, book tables, and track your
+            dining history.
           </p>
         </div>
       </div>
@@ -54,14 +93,12 @@ export function SignUpForm() {
       {/* Right — Form */}
       <div className="flex flex-col items-center justify-center px-6 py-16">
         <FadeIn className="w-full max-w-md flex flex-col gap-8">
-          {/* Header */}
           <div className="flex flex-col gap-2">
             <H2>Create an account</H2>
             <Muted>Fill in your details to get started.</Muted>
           </div>
 
-          {/* Google OAuth */}
-          <Button variant="outline" className="w-full gap-2">
+          <Button variant="outline" className="w-full gap-2" onClick={handleGoogle}>
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -83,21 +120,27 @@ export function SignUpForm() {
             Continue with Google
           </Button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
             <Muted className="text-xs">or continue with email</Muted>
             <Separator className="flex-1" />
           </div>
 
-          {/* Form Fields */}
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="name">
                 <User className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Full Name
               </Label>
-              <Input id="name" type="text" placeholder="John Doe" autoComplete="name" />
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -105,7 +148,15 @@ export function SignUpForm() {
                 <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Email
               </Label>
-              <Input id="email" type="email" placeholder="john@example.com" autoComplete="email" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="john@example.com"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -120,6 +171,9 @@ export function SignUpForm() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   className="pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -143,6 +197,9 @@ export function SignUpForm() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   className="pr-10"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -166,12 +223,13 @@ export function SignUpForm() {
               .
             </p>
 
-            <Button type="submit" className="w-full mt-2">
-              Create Account
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
+              {loading ? 'Creating account...' : 'Create Account'}
             </Button>
           </form>
 
-          {/* Sign in link */}
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link href="/sign-in" className="text-primary hover:underline font-medium">
