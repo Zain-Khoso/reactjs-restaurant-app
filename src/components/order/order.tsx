@@ -14,6 +14,7 @@ import { Separator } from '@/components/shadcn/separator';
 import { H2, H3, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { useCartStore } from '@/store/cart';
+import { createCheckoutSession } from '@/actions/stripe';
 
 const DELIVERY_FEE = 150;
 
@@ -30,10 +31,35 @@ export function OrderSection() {
   const [deliveryNotes, setDeliveryNotes] = React.useState('');
   const [mounted, setMounted] = React.useState(false);
 
+  const [checkoutLoading, setCheckoutLoading] = React.useState(false);
+  const [checkoutError, setCheckoutError] = React.useState('');
+
   React.useEffect(() => setMounted(true), []);
 
-  const handleCheckout = () => {
-    router.push('/order/success');
+  // Replace handleCheckout
+  const handleCheckout = async () => {
+    if (!deliveryAddress || !deliveryPhone) {
+      setCheckoutError('Please fill in your phone and delivery address.');
+      return;
+    }
+    setCheckoutError('');
+    setCheckoutLoading(true);
+
+    try {
+      const result = await createCheckoutSession({
+        items,
+        address: deliveryAddress,
+        phone: deliveryPhone,
+        notes: deliveryNotes,
+      });
+
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } catch {
+      setCheckoutError('Something went wrong. Please try again.');
+      setCheckoutLoading(false);
+    }
   };
 
   if (!mounted || items.length === 0) {
@@ -232,8 +258,16 @@ export function OrderSection() {
                 <p className="font-bold text-lg text-primary">Rs {total.toLocaleString()}</p>
               </div>
 
-              <Button size="lg" className="w-full mt-2" onClick={handleCheckout}>
-                Pay with Stripe
+              {/* Update button and add error display in the summary card: */}
+              {checkoutError && <p className="text-xs text-destructive">{checkoutError}</p>}
+
+              <Button
+                size="lg"
+                className="w-full mt-2"
+                onClick={handleCheckout}
+                disabled={checkoutLoading || items.length === 0}
+              >
+                {checkoutLoading ? 'Redirecting to Stripe...' : 'Pay with Stripe'}
               </Button>
 
               <Muted className="text-xs text-center">
