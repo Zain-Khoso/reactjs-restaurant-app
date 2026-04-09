@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Search, CalendarCheck, Clock, Users } from 'lucide-react';
+import { format } from 'date-fns';
 import { Input } from '@/components/shadcn/input';
 import { Button } from '@/components/shadcn/button';
 import { Card, CardContent } from '@/components/shadcn/card';
@@ -14,6 +15,7 @@ import {
 } from '@/components/shadcn/select';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
+import { updateReservationStatus } from '@/actions/admin';
 
 const STATUS_STYLES: Record<string, string> = {
   CONFIRMED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -23,75 +25,26 @@ const STATUS_STYLES: Record<string, string> = {
 
 const STATUSES = ['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'];
 
-const RESERVATIONS = [
-  {
-    id: 'RES-008',
-    name: 'Ahmed Khan',
-    email: 'ahmed@example.com',
-    phone: '+92 300 1234567',
-    date: 'Apr 10, 2026',
-    time: '8:00 PM',
-    partySize: 4,
-    status: 'CONFIRMED',
-    notes: 'Window seat preferred.',
-  },
-  {
-    id: 'RES-007',
-    name: 'Sara Ali',
-    email: 'sara@example.com',
-    phone: '+92 311 2345678',
-    date: 'Apr 10, 2026',
-    time: '7:30 PM',
-    partySize: 2,
-    status: 'PENDING',
-    notes: '',
-  },
-  {
-    id: 'RES-006',
-    name: 'Usman Mir',
-    email: 'usman@example.com',
-    phone: '+92 321 3456789',
-    date: 'Apr 11, 2026',
-    time: '9:00 PM',
-    partySize: 6,
-    status: 'PENDING',
-    notes: 'Birthday celebration.',
-  },
-  {
-    id: 'RES-005',
-    name: 'Fatima Noor',
-    email: 'fatima@example.com',
-    phone: '+92 333 4567890',
-    date: 'Apr 8, 2026',
-    time: '1:00 PM',
-    partySize: 3,
-    status: 'CONFIRMED',
-    notes: '',
-  },
-  {
-    id: 'RES-004',
-    name: 'Bilal Raza',
-    email: 'bilal@example.com',
-    phone: '+92 345 5678901',
-    date: 'Apr 7, 2026',
-    time: '8:30 PM',
-    partySize: 2,
-    status: 'CANCELLED',
-    notes: '',
-  },
-];
-
-export function AdminReservations() {
+export function AdminReservations({ reservations }: { reservations: any[] }) {
   const [search, setSearch] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('ALL');
 
-  const filtered = RESERVATIONS.filter((res) => {
+  const filtered = reservations.filter((res) => {
     const matchesSearch =
       res.id.toLowerCase().includes(search.toLowerCase()) ||
-      res.name.toLowerCase().includes(search.toLowerCase());
+      res.name.toLowerCase().includes(search.toLowerCase()) ||
+      res.email.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || res.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const handleConfirm = async (id: string) => {
+    await updateReservationStatus(id, 'CONFIRMED');
+  };
+
+  const handleCancel = async (id: string) => {
+    await updateReservationStatus(id, 'CANCELLED');
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -100,7 +53,6 @@ export function AdminReservations() {
         <H2 className="mt-1">Reservations</H2>
       </FadeIn>
 
-      {/* Filters */}
       <FadeIn className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -113,7 +65,7 @@ export function AdminReservations() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {STATUSES.map((s) => (
@@ -125,58 +77,63 @@ export function AdminReservations() {
         </Select>
       </FadeIn>
 
-      {/* List */}
-      <StaggerChildren className="flex flex-col gap-3">
-        {filtered.map((res) => (
-          <StaggerItem key={res.id}>
-            <Card className="border border-border shadow-sm">
-              <CardContent className="flex flex-col gap-4 p-4">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                  <div className="flex flex-col gap-0.5">
-                    <H4 className="text-sm">
-                      {res.id} · {res.name}
-                    </H4>
-                    <Muted className="text-xs">
-                      {res.email} · {res.phone}
-                    </Muted>
+      {filtered.length === 0 ? (
+        <Muted className="text-sm text-center py-10">No reservations found.</Muted>
+      ) : (
+        <StaggerChildren className="flex flex-col gap-3">
+          {filtered.map((res) => (
+            <StaggerItem key={res.id}>
+              <Card className="border border-border shadow-sm">
+                <CardContent className="flex flex-col gap-4 p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div className="flex flex-col gap-0.5">
+                      <H4 className="text-sm">
+                        {res.id.slice(0, 8).toUpperCase()} · {res.name}
+                      </H4>
+                      <Muted className="text-xs">
+                        {res.email} · {res.phone}
+                      </Muted>
+                    </div>
+                    <span
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full w-fit ${STATUS_STYLES[res.status]}`}
+                    >
+                      {res.status}
+                    </span>
                   </div>
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full w-fit ${STATUS_STYLES[res.status]}`}
-                  >
-                    {res.status}
-                  </span>
-                </div>
 
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <CalendarCheck className="h-3.5 w-3.5 text-primary" />
-                    <Muted className="text-sm">{res.date}</Muted>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarCheck className="h-3.5 w-3.5 text-primary" />
+                      <Muted className="text-sm">{format(new Date(res.date), 'PPP')}</Muted>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-primary" />
+                      <Muted className="text-sm">{res.time}</Muted>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 text-primary" />
+                      <Muted className="text-sm">{res.partySize} Guests</Muted>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-primary" />
-                    <Muted className="text-sm">{res.time}</Muted>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Users className="h-3.5 w-3.5 text-primary" />
-                    <Muted className="text-sm">{res.partySize} Guests</Muted>
-                  </div>
-                </div>
 
-                {res.notes && <Muted className="text-xs italic">&quot;{res.notes}&quot;</Muted>}
+                  {res.notes && <Muted className="text-xs italic">&quot;{res.notes}&quot;</Muted>}
 
-                <div className="flex items-center gap-2 pt-1">
-                  <Button size="sm" variant="outline" onClick={() => {}}>
-                    Confirm
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => {}}>
-                    Cancel
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </StaggerItem>
-        ))}
-      </StaggerChildren>
+                  {res.status === 'PENDING' && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <Button size="sm" onClick={() => handleConfirm(res.id)}>
+                        Confirm
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleCancel(res.id)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </StaggerItem>
+          ))}
+        </StaggerChildren>
+      )}
     </div>
   );
 }
