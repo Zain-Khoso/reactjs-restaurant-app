@@ -57,7 +57,7 @@ export async function createCheckoutSession(input: CheckoutInput) {
     line_items: [
       ...input.items.map((item) => ({
         price_data: {
-          currency: 'usd',
+          currency: 'pkr',
           product_data: {
             name: item.name,
             ...(item.image ? { images: [item.image] } : {}),
@@ -68,7 +68,7 @@ export async function createCheckoutSession(input: CheckoutInput) {
       })),
       {
         price_data: {
-          currency: 'usd',
+          currency: 'pkr',
           product_data: { name: 'Delivery Fee' },
           unit_amount: DELIVERY_FEE * 100,
         },
