@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/shadcn/button';
@@ -5,6 +7,8 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { Badge } from '@/components/shadcn/badge';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { StaggerChildren, StaggerItem, FadeIn } from '@/components/animations';
+import { useCartStore } from '@/store/cart';
+import { ShoppingCart } from 'lucide-react';
 
 type MenuItem = {
   id: string;
@@ -17,6 +21,7 @@ type MenuItem = {
 };
 
 export function BestDishes({ dishes }: { dishes: MenuItem[] }) {
+  const addItem = useCartStore((s) => s.addItem);
   return (
     <section className="py-16 px-4">
       <div className="mx-auto max-w-7xl flex flex-col items-center gap-10">
@@ -54,7 +59,20 @@ export function BestDishes({ dishes }: { dishes: MenuItem[] }) {
                   </div>
                   <p className="text-lg font-bold text-primary">Rs {dish.price.toLocaleString()}</p>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5"
+                      onClick={() =>
+                        addItem({
+                          id: dish.id,
+                          name: dish.name,
+                          price: dish.price,
+                          image: dish.image,
+                        })
+                      }
+                    >
+                      <ShoppingCart className="h-3.5 w-3.5" />
                       Add to Cart
                     </Button>
                     <Button size="sm" className="flex-1" asChild>

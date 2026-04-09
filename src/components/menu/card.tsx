@@ -6,6 +6,7 @@ import { Button } from '@/components/shadcn/button';
 import { Badge } from '@/components/shadcn/badge';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { H4, Muted } from '@/components/shadcn/typography';
+import { useCartStore } from '@/store/cart';
 
 type MenuItem = {
   id: string;
@@ -18,6 +19,7 @@ type MenuItem = {
 };
 
 export function MenuCard({ dish }: { dish: MenuItem }) {
+  const addItem = useCartStore((s) => s.addItem);
   return (
     <Card className="border border-border shadow-sm overflow-hidden group h-full flex flex-col">
       <div className="relative aspect-4/3 bg-muted overflow-hidden">
@@ -49,7 +51,19 @@ export function MenuCard({ dish }: { dish: MenuItem }) {
         </div>
         <p className="text-lg font-bold text-primary">Rs {dish.price.toLocaleString()}</p>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="flex-1 gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() =>
+              addItem({
+                id: dish.id,
+                name: dish.name,
+                price: dish.price,
+                image: dish.image,
+              })
+            }
+          >
             <ShoppingCart className="h-3.5 w-3.5" />
             Add to Cart
           </Button>

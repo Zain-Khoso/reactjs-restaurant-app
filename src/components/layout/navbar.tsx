@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Menu, Sun, Moon, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+import { CartDrawer } from '../cart/drawer';
 // Add these imports
 import { useSession, signOut } from '@/utils/auth-client';
 import { User, LogOut, LayoutDashboard } from 'lucide-react';
@@ -88,6 +89,7 @@ export function Navbar() {
         </ul>
 
         <div className="hidden md:flex items-center gap-2">
+          <CartDrawer />
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {mounted && theme === 'dark' ? (
               <Sun className="h-4 w-4" />
@@ -143,6 +145,7 @@ export function Navbar() {
 
         {/* Mobile Right Side */}
         <div className="flex md:hidden items-center gap-2">
+          <CartDrawer />
           {/* Dark Mode Toggle - visible on mobile outside sheet */}
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {mounted && theme === 'dark' ? (

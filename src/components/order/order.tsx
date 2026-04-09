@@ -3,69 +3,40 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Minus, Plus, Trash2, ShoppingBag, Tag } from 'lucide-react';
-// Shadcn
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { Label } from '@/components/shadcn/label';
 import { Textarea } from '@/components/shadcn/textarea';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { Separator } from '@/components/shadcn/separator';
-import { Badge } from '@/components/shadcn/badge';
-// Animations
-import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
-// Typography
 import { H2, H3, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
-
-const INITIAL_CART = [
-  {
-    id: '1',
-    name: 'Margherita Pizza',
-    description: '1 pizza + 2 drinks',
-    price: 1299,
-    image: '/images/gallery/dishes/1.webp',
-    quantity: 1,
-  },
-  {
-    id: '2',
-    name: 'Spaghetti Carbonara',
-    description: '1 pasta dish + 1 drink',
-    price: 1099,
-    image: '/images/gallery/dishes/2.webp',
-    quantity: 2,
-  },
-  {
-    id: '3',
-    name: 'Tiramisu',
-    description: 'Classic Italian dessert',
-    price: 599,
-    image: '/images/gallery/dishes/3.webp',
-    quantity: 1,
-  },
-];
+import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
+import { useCartStore } from '@/store/cart';
 
 const DELIVERY_FEE = 150;
 
 export function OrderSection() {
-  const [cart, setCart] = React.useState(INITIAL_CART);
-  const [coupon, setCoupon] = React.useState('');
-
-  const updateQuantity = (id: string, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) => (item.id === id ? { ...item, quantity: item.quantity + delta } : item))
-        .filter((item) => item.quantity > 0)
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const router = useRouter();
+  const { items, updateQuantity, removeItem } = useCartStore();
+  const subtotal = useCartStore((s) => s.subtotal());
   const total = subtotal + DELIVERY_FEE;
 
-  if (cart.length === 0) {
+  const [coupon, setCoupon] = React.useState('');
+  const [deliveryName, setDeliveryName] = React.useState('');
+  const [deliveryPhone, setDeliveryPhone] = React.useState('');
+  const [deliveryAddress, setDeliveryAddress] = React.useState('');
+  const [deliveryNotes, setDeliveryNotes] = React.useState('');
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => setMounted(true), []);
+
+  const handleCheckout = () => {
+    router.push('/order/success');
+  };
+
+  if (!mounted || items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-6 py-32 px-4 text-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
@@ -84,42 +55,38 @@ export function OrderSection() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-8 py-12">
-      {/* Page Header */}
       <FadeIn className="mb-10">
         <SectionLabel>Checkout</SectionLabel>
         <H2 className="mt-1">Your Order</H2>
       </FadeIn>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-        {/* Left — Cart Items (2 cols) */}
+        {/* Left — Cart + Delivery */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Items */}
           <StaggerChildren className="flex flex-col gap-4">
-            {cart.map((item) => (
+            {items.map((item) => (
               <StaggerItem key={item.id}>
                 <Card className="border border-border shadow-sm">
                   <CardContent className="flex items-center gap-4 p-4">
-                    {/* Image */}
                     <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                      />
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-muted" />
+                      )}
                     </div>
-
-                    {/* Details */}
                     <div className="flex flex-1 flex-col gap-1 min-w-0">
                       <H4 className="text-sm truncate">{item.name}</H4>
-                      <Muted className="text-xs">{item.description}</Muted>
                       <p className="text-sm font-bold text-primary">
                         Rs {item.price.toLocaleString()}
                       </p>
                     </div>
-
-                    {/* Quantity + Remove */}
                     <div className="flex flex-col items-end gap-3 shrink-0">
                       <button
                         onClick={() => removeItem(item.id)}
@@ -132,7 +99,7 @@ export function OrderSection() {
                           variant="outline"
                           size="icon"
                           className="h-7 w-7"
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -141,7 +108,7 @@ export function OrderSection() {
                           variant="outline"
                           size="icon"
                           className="h-7 w-7"
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -182,15 +149,30 @@ export function OrderSection() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="delivery-name">Full Name</Label>
-                    <Input id="delivery-name" placeholder="John Doe" />
+                    <Input
+                      id="delivery-name"
+                      placeholder="John Doe"
+                      value={deliveryName}
+                      onChange={(e) => setDeliveryName(e.target.value)}
+                    />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="delivery-phone">Phone</Label>
-                    <Input id="delivery-phone" placeholder="+92 300 0000000" />
+                    <Input
+                      id="delivery-phone"
+                      placeholder="+92 300 0000000"
+                      value={deliveryPhone}
+                      onChange={(e) => setDeliveryPhone(e.target.value)}
+                    />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <Label htmlFor="delivery-address">Delivery Address</Label>
-                    <Input id="delivery-address" placeholder="123 Street, City" />
+                    <Input
+                      id="delivery-address"
+                      placeholder="123 Street, City"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                    />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <Label htmlFor="delivery-notes">
@@ -198,9 +180,11 @@ export function OrderSection() {
                     </Label>
                     <Textarea
                       id="delivery-notes"
-                      placeholder="Any special instructions for your order..."
+                      placeholder="Any special instructions..."
                       rows={3}
                       className="resize-none"
+                      value={deliveryNotes}
+                      onChange={(e) => setDeliveryNotes(e.target.value)}
                     />
                   </div>
                 </div>
@@ -209,17 +193,16 @@ export function OrderSection() {
           </FadeIn>
         </div>
 
-        {/* Right — Order Summary */}
+        {/* Right — Summary */}
         <FadeIn direction="left" className="flex flex-col gap-4">
           <Card className="border border-border shadow-sm sticky top-24">
             <CardContent className="flex flex-col gap-4 p-6">
               <H3 className="text-base">Order Summary</H3>
 
-              {/* Item breakdown */}
               <div className="flex flex-col gap-2">
-                {cart.map((item) => (
+                {items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between">
-                    <Muted className="text-sm truncate max-w-40">
+                    <Muted className="text-sm truncate max-w-[160px]">
                       {item.name} <span className="text-xs">x{item.quantity}</span>
                     </Muted>
                     <Muted className="text-sm shrink-0">
@@ -231,7 +214,6 @@ export function OrderSection() {
 
               <Separator />
 
-              {/* Totals */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Muted className="text-sm">Subtotal</Muted>
@@ -250,8 +232,7 @@ export function OrderSection() {
                 <p className="font-bold text-lg text-primary">Rs {total.toLocaleString()}</p>
               </div>
 
-              {/* Stripe Checkout Button */}
-              <Button size="lg" className="w-full mt-2">
+              <Button size="lg" className="w-full mt-2" onClick={handleCheckout}>
                 Pay with Stripe
               </Button>
 
