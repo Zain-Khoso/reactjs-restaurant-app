@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@better-fetch/fetch':
+        specifier: ^1.1.21
+        version: 1.1.21
       '@prisma/adapter-pg':
         specifier: ^7.7.0
         version: 7.7.0

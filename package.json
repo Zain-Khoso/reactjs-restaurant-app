@@ -13,6 +13,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@better-fetch/fetch": "^1.1.21",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "better-auth": "^1.6.0",
