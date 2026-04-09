@@ -7,9 +7,23 @@ export function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
-  return (
-    <NextThemesProvider {...props} scriptProps={{ 'data-cfasync': 'false' }}>
-      {children}
-    </NextThemesProvider>
-  );
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args: unknown[]) => {
+      if (typeof args[0] === 'string' && args[0].includes('Encountered a script tag')) {
+        return;
+      }
+      originalError(...args);
+    };
+    setMounted(true);
+    return () => {
+      console.error = originalError;
+    };
+  }, []);
+
+  if (!mounted) return <>{children}</>;
+
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
