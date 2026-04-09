@@ -8,89 +8,74 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { FadeIn } from '@/components/animations';
 import { H3, Muted } from '@/components/shadcn/typography';
 import { User, Mail, Phone, Lock } from 'lucide-react';
+import { updateProfile } from '@/actions/account';
+import React from 'react';
 
-export function AccountProfile() {
+export function AccountProfile({ user }: { user: any }) {
+  const [success, setSuccess] = React.useState(false);
+
+  const handleProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    await updateProfile({
+      name: data.get('name') as string,
+      phone: data.get('phone') as string,
+    });
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 3000);
+  };
+
   return (
     <FadeIn className="flex flex-col gap-6 max-w-2xl">
-      {/* Personal Info */}
       <Card className="border border-border shadow-sm">
         <CardContent className="flex flex-col gap-6 p-6">
           <div>
             <H3 className="text-base">Personal Information</H3>
-            <Muted className="text-xs mt-1">Update your name, email and phone number.</Muted>
+            <Muted className="text-xs mt-1">Update your name and phone number.</Muted>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <form onSubmit={handleProfile} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="profile-name">
+              <Label htmlFor="name">
                 <User className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Full Name
               </Label>
-              <Input id="profile-name" defaultValue="John Doe" />
+              <Input id="name" name="name" defaultValue={user.name} />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="profile-email">
+              <Label htmlFor="email">
                 <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Email
               </Label>
-              <Input id="profile-email" type="email" defaultValue="john@example.com" />
+              <Input id="email" value={user.email} disabled className="opacity-60" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="profile-phone">
+              <Label htmlFor="phone">
                 <Phone className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Phone
               </Label>
-              <Input id="profile-phone" type="tel" defaultValue="+92 300 0000000" />
+              <Input id="phone" name="phone" defaultValue={user.phone ?? ''} />
             </div>
-          </div>
-          <Button className="w-fit">Save Changes</Button>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <Button type="submit" className="w-fit">
+                Save Changes
+              </Button>
+              {success && (
+                <p className="text-sm text-green-600 dark:text-green-400">Saved successfully.</p>
+              )}
+            </div>
+          </form>
         </CardContent>
       </Card>
 
       <Separator />
 
-      {/* Change Password */}
-      <Card className="border border-border shadow-sm">
-        <CardContent className="flex flex-col gap-6 p-6">
-          <div>
-            <H3 className="text-base">Change Password</H3>
-            <Muted className="text-xs mt-1">Choose a strong password for your account.</Muted>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="current-password">
-                <Lock className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
-                Current Password
-              </Label>
-              <Input id="current-password" type="password" placeholder="••••••••" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-password">
-                <Lock className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
-                New Password
-              </Label>
-              <Input id="new-password" type="password" placeholder="••••••••" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="confirm-password">
-                <Lock className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
-                Confirm New Password
-              </Label>
-              <Input id="confirm-password" type="password" placeholder="••••••••" />
-            </div>
-          </div>
-          <Button className="w-fit">Update Password</Button>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Danger Zone */}
       <Card className="border border-destructive/30 shadow-sm">
         <CardContent className="flex flex-col gap-4 p-6">
           <div>
             <H3 className="text-base text-destructive">Danger Zone</H3>
             <Muted className="text-xs mt-1">
-              Permanently delete your account and all associated data. This action cannot be undone.
+              Permanently delete your account and all associated data.
             </Muted>
           </div>
           <Button variant="destructive" className="w-fit">

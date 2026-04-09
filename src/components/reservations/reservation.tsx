@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon, Clock, Users, User, Mail, Phone, NotebookPen } from 'lucide-react';
+import { createReservation } from '@/actions/reservations';
 // Shadcn
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
@@ -62,6 +63,44 @@ const INFO_CARDS = [
 ];
 
 export function ReservationsSection() {
+  // Add state
+  const [time, setTime] = React.useState('');
+  const [partySize, setPartySize] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [notes, setNotes] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!date || !time || !partySize) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+
+    const result = await createReservation({
+      name,
+      email,
+      phone,
+      date,
+      time,
+      partySize: parseInt(partySize),
+      notes,
+    });
+
+    setLoading(false);
+
+    if (result.success) {
+      setSuccess(true);
+    } else {
+      setError(result.error ?? 'Something went wrong.');
+    }
+  };
   const [date, setDate] = React.useState<Date | undefined>();
 
   return (
@@ -74,7 +113,7 @@ export function ReservationsSection() {
             <H2 className="mt-1">Reserve your table.</H2>
           </div>
 
-          <form className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Personal Details */}
             <div className="flex flex-col gap-4">
               <H3 className="text-base text-muted-foreground font-medium">Personal Details</H3>
@@ -84,21 +123,38 @@ export function ReservationsSection() {
                     <User className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                     Full Name
                   </Label>
-                  <Input id="name" placeholder="John Doe" />
+                  <Input
+                    id="name"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="email">
                     <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                     Email
                   </Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="phone">
                     <Phone className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                     Phone
                   </Label>
-                  <Input id="phone" type="tel" placeholder="+92 300 0000000" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+92 300 0000000"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -166,7 +222,7 @@ export function ReservationsSection() {
                     <Users className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                     Party Size
                   </Label>
-                  <Select>
+                  <Select value={partySize} onValueChange={(val) => setPartySize(val)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Number of guests" />
                     </SelectTrigger>
@@ -197,12 +253,23 @@ export function ReservationsSection() {
                   placeholder="Dietary requirements, special occasions, seating preferences..."
                   rows={4}
                   className="resize-none"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
                 />
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full sm:w-fit">
-              Confirm Reservation
+            {/* Success message */}
+            {success && (
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                Your reservation has been submitted! We will confirm shortly.
+              </p>
+            )}
+
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <Button type="submit" size="lg" className="w-full sm:w-fit" disabled={loading}>
+              {loading ? 'Submitting...' : 'Confirm Reservation'}
             </Button>
           </form>
         </FadeIn>

@@ -7,38 +7,41 @@ import { Badge } from '@/components/shadcn/badge';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { H4, Muted } from '@/components/shadcn/typography';
 
-interface Dish {
+type MenuItem = {
   id: string;
   name: string;
   description: string;
   price: number;
-  image: string;
-  category: string;
+  image: string | null;
   tags: string[];
   featured: boolean;
-}
+};
 
-export function MenuCard({ dish }: { dish: Dish }) {
+export function MenuCard({ dish }: { dish: MenuItem }) {
   return (
     <Card className="border border-border shadow-sm overflow-hidden group h-full flex flex-col">
-      {/* Image */}
       <div className="relative aspect-4/3 bg-muted overflow-hidden">
-        <Image
-          src={dish.image}
-          alt={dish.name}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {dish.image ? (
+          <Image
+            src={dish.image}
+            alt={dish.name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
+            <Muted className="text-xs">No image</Muted>
+          </div>
+        )}
         {dish.featured && <Badge className="absolute top-3 left-3">Featured</Badge>}
-        {dish.tags.map((tag) => (
+        {dish.tags.slice(0, 1).map((tag) => (
           <Badge key={tag} variant="secondary" className="absolute top-3 right-3 text-xs">
             {tag}
           </Badge>
         ))}
       </div>
 
-      {/* Content */}
       <CardContent className="flex flex-col gap-3 p-4 flex-1">
         <div className="flex-1">
           <H4 className="text-base">{dish.name}</H4>

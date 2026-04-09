@@ -7,7 +7,15 @@ import { AccountReservations } from '@/components/account/reservation';
 import { AccountProfile } from '@/components/account/profile';
 import { FadeIn } from '@/components/animations';
 
-export function AccountTabs() {
+export function AccountTabs({
+  orders,
+  reservations,
+  user,
+}: {
+  orders: any[];
+  reservations: any[];
+  user: any;
+}) {
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-8 py-10">
       <FadeIn>
@@ -28,13 +36,13 @@ export function AccountTabs() {
           </TabsList>
 
           <TabsContent value="orders">
-            <AccountOrders />
+            <AccountOrders orders={orders} />
           </TabsContent>
           <TabsContent value="reservations">
-            <AccountReservations />
+            <AccountReservations reservations={reservations} />
           </TabsContent>
           <TabsContent value="profile">
-            <AccountProfile />
+            <AccountProfile user={user} />
           </TabsContent>
         </Tabs>
       </FadeIn>
