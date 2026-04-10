@@ -7,16 +7,8 @@ import { Badge } from '@/components/shadcn/badge';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { H4, Muted } from '@/components/shadcn/typography';
 import { useCartStore } from '@/store/cart';
-
-type MenuItem = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string | null;
-  tags: string[];
-  featured: boolean;
-};
+import Link from 'next/link';
+import { MenuItem } from '@/prisma/client';
 
 export function MenuCard({ dish }: { dish: MenuItem }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -46,7 +38,9 @@ export function MenuCard({ dish }: { dish: MenuItem }) {
 
       <CardContent className="flex flex-col gap-3 p-4 flex-1">
         <div className="flex-1">
-          <H4 className="text-base">{dish.name}</H4>
+          <Link href={`/menu/${dish.slug}`}>
+            <H4 className="text-base hover:text-primary transition-colors">{dish.name}</H4>
+          </Link>
           <Muted className="text-xs mt-1 line-clamp-2">{dish.description}</Muted>
         </div>
         <p className="text-lg font-bold text-primary">Rs {dish.price.toLocaleString()}</p>
