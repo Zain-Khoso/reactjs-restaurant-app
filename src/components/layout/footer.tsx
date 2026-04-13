@@ -12,7 +12,7 @@ import { Small, Muted } from '@/components/shadcn/typography';
 const COMPANY_LINKS = [
   { label: 'Menu', href: '/menu' },
   { label: 'FAQs', href: '/faqs' },
-  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Privacy Policy', href: '/policy' },
   { label: 'Terms and Conditions', href: '/terms' },
 ];
 

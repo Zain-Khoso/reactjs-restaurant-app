@@ -46,7 +46,12 @@ export function SignUpForm() {
     });
 
     if (error) {
-      setError(error.message ?? 'Something went wrong.');
+      // Better Auth error codes
+      if (error.status === 422 || error.message?.toLowerCase().includes('email')) {
+        setError('An account with this email already exists.');
+      } else {
+        setError(error.message ?? 'Something went wrong.');
+      }
       setLoading(false);
       return;
     }
@@ -217,7 +222,7 @@ export function SignUpForm() {
                 Terms & Conditions
               </Link>{' '}
               and{' '}
-              <Link href="/privacy-policy" className="text-primary hover:underline">
+              <Link href="/policy" className="text-primary hover:underline">
                 Privacy Policy
               </Link>
               .
