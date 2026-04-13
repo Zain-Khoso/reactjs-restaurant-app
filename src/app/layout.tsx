@@ -15,6 +15,32 @@ export const metadata: Metadata = {
   },
   description:
     'Urban Dish — a culinary journey through bold flavours and unforgettable dining experiences.',
+  icons: {
+    icon: '/brand/icon.png',
+    apple: '/brand/icon.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Urban Dish',
+    title: 'Urban Dish',
+    description:
+      'Urban Dish — a culinary journey through bold flavours and unforgettable dining experiences.',
+    images: [
+      {
+        url: 'https://placehold.co/1200x630',
+        width: 1200,
+        height: 630,
+        alt: 'Urban Dish',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Urban Dish',
+    description:
+      'Urban Dish — a culinary journey through bold flavours and unforgettable dining experiences.',
+    images: ['https://placehold.co/1200x630'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
