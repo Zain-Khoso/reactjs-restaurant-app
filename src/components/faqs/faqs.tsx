@@ -106,9 +106,9 @@ export function FaqsSection() {
               <H2 className="mt-1 text-2xl">{group.category}</H2>
             </div>
             <StaggerChildren className="flex flex-col gap-2">
-              {group.items.map((faq) => (
-                <StaggerItem key={faq.question}>
-                  <Accordion type="single" collapsible>
+              <Accordion type="single" collapsible className="flex flex-col gap-2">
+                {group.items.map((faq) => (
+                  <StaggerItem key={faq.question}>
                     <AccordionItem
                       value={faq.question}
                       className="border border-border rounded-lg px-4"
@@ -120,9 +120,9 @@ export function FaqsSection() {
                         {faq.answer}
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                </StaggerItem>
-              ))}
+                  </StaggerItem>
+                ))}
+              </Accordion>
             </StaggerChildren>
           </FadeIn>
         ))}
