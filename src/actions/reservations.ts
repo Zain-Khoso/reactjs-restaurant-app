@@ -15,20 +15,28 @@ export type ReservationInput = {
 };
 
 export async function createReservation(input: ReservationInput) {
-  const user = await getUser();
-
   try {
+    const user = await getUser();
+
     const reservation = await prisma.reservation.create({
       data: {
-        ...input,
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        date: input.date,
+        time: input.time,
+        partySize: input.partySize,
+        notes: input.notes ?? null,
         userId: user?.id ?? null,
+        status: 'PENDING',
       },
     });
 
     revalidatePath('/account');
+    revalidatePath('/admin/reservations');
     return { success: true, reservation };
   } catch (error) {
-    console.error(error);
-    return { success: false, error: 'Failed to create reservation.' };
+    console.error('createReservation error:', error);
+    return { success: false, error: 'Failed to create reservation. Please try again.' };
   }
 }

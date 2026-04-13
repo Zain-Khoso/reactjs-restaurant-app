@@ -17,7 +17,9 @@ export async function getDashboardStats() {
     recentOrders,
     monthlyRevenue,
   ] = await Promise.all([
-    prisma.order.count(),
+    prisma.reservation.count({
+      where: { status: { not: 'CANCELLED' } },
+    }),
     prisma.order.aggregate({
       _sum: { total: true },
       where: { status: { not: 'CANCELLED' } },
@@ -154,7 +156,7 @@ export async function getAdminReservations() {
   await requireAdmin();
   return prisma.reservation.findMany({
     include: { user: true },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { date: 'desc' },
   });
 }
 

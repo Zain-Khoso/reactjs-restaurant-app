@@ -24,15 +24,20 @@ export async function getUserReservations() {
 }
 
 export async function cancelReservation(id: string) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  await prisma.reservation.update({
-    where: { id, userId: user.id },
-    data: { status: 'CANCELLED' },
-  });
+    await prisma.reservation.update({
+      where: { id, userId: user.id },
+      data: { status: 'CANCELLED' },
+    });
 
-  revalidatePath('/account');
-  return { success: true };
+    revalidatePath('/account');
+    return { success: true };
+  } catch (error) {
+    console.error('cancelReservation error:', error);
+    return { success: false, error: 'Failed to cancel reservation.' };
+  }
 }
 
 export async function updateProfile(data: { name: string; phone: string }) {

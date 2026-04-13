@@ -5,6 +5,11 @@ import { AdminReservations } from '@/components/admin/reservations';
 export const metadata: Metadata = { title: 'Manage Reservations' };
 
 export default async function AdminReservationsPage() {
-  const reservations = await getAdminReservations();
-  return <AdminReservations reservations={reservations} />;
+  try {
+    const reservations = await getAdminReservations();
+    return <AdminReservations reservations={reservations} />;
+  } catch (error) {
+    console.error('AdminReservationsPage error:', error);
+    return <AdminReservations reservations={[]} />;
+  }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Button } from '@/components/shadcn/button';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { StaggerChildren, StaggerItem } from '@/components/animations';
@@ -16,7 +17,19 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export function AccountReservations({ reservations }: { reservations: any[] }) {
-  if (reservations.length === 0) {
+  const [data, setData] = React.useState(reservations);
+  const [cancelling, setCancelling] = React.useState<string | null>(null);
+
+  const handleCancel = async (id: string) => {
+    setCancelling(id);
+    const result = await cancelReservation(id);
+    if (result.success) {
+      setData((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'CANCELLED' } : r)));
+    }
+    setCancelling(null);
+  };
+
+  if (data.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -33,7 +46,7 @@ export function AccountReservations({ reservations }: { reservations: any[] }) {
 
   return (
     <StaggerChildren className="flex flex-col gap-4">
-      {reservations.map((res) => (
+      {data.map((res) => (
         <StaggerItem key={res.id}>
           <Card className="border border-border shadow-sm">
             <CardContent className="p-4 flex flex-col gap-4">
@@ -45,6 +58,7 @@ export function AccountReservations({ reservations }: { reservations: any[] }) {
                   {res.status}
                 </span>
               </div>
+
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-1.5">
                   <CalendarCheck className="h-3.5 w-3.5 text-primary" />
@@ -59,17 +73,20 @@ export function AccountReservations({ reservations }: { reservations: any[] }) {
                   <Muted className="text-sm">{res.partySize} Guests</Muted>
                 </div>
               </div>
+
               {res.notes && <Muted className="text-xs italic">&quot;{res.notes}&quot;</Muted>}
+
               {res.status !== 'CANCELLED' && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={async () => {
-                    await cancelReservation(res.id);
-                  }}
-                >
-                  Cancel
-                </Button>
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={cancelling === res.id}
+                    onClick={() => handleCancel(res.id)}
+                  >
+                    {cancelling === res.id ? 'Cancelling...' : 'Cancel'}
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>
