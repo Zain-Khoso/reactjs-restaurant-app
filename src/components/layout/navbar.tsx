@@ -63,7 +63,7 @@ export function Navbar() {
             alt="Urban Dish"
             width={160}
             height={50}
-            className="h-11 w-auto object-contain"
+            className="h-12 w-auto object-contain"
             priority
           />
         </Link>
