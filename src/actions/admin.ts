@@ -118,7 +118,11 @@ export async function updateMenuItem(
 export async function deleteMenuItem(id: string) {
   await requireAdmin();
 
+  // Delete related records first
+  await prisma.orderItem.deleteMany({ where: { menuItemId: id } });
+  await prisma.review.deleteMany({ where: { menuItemId: id } });
   await prisma.menuItem.delete({ where: { id } });
+
   revalidatePath('/admin/menu');
   revalidatePath('/menu');
   revalidatePath('/');
