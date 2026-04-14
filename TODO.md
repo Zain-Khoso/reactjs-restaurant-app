@@ -9,17 +9,15 @@ Listed below are some bugs that need fixing and some features that need implemen
    2. Account page on mobile.
    3. Admin page on mobile.
 
-2. Upon updating user name in account page. It's does not change in the navbar automatically.
+2. Upon updating user name in account page. It's does not change in the navbar automatically. (we should have a zustand store for use data. So when it is updated at one place. it updates everywhere else too)
 
-3. Order success page styles arent proper in production.
+3. Order success page styles arent correct. The button and text appear side by side. Cramped together.
 
-4. Reservation form is not submitable. Always says that a field is missing.
+4. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
 
-5. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
+5. Remove blog link from the footer.
 
-6. Remove blog link from the footer.
-
-7. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again.
+6. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
 
 ## Features
 
@@ -27,30 +25,30 @@ Listed below are some bugs that need fixing and some features that need implemen
 
 2. Policy and Terms pages content should be manageable from admin.
 
-3. All static pages should be made of build time. (SSG)
+3. All static pages should be made at build time with the latest content from db at that time. (SSG)
 
 4. Delivery Charges should be manageble inside admin.
 
-5. Forms should use react-hook-form + zod combination.
+5. All forms should use react-hook-form + zod combination.
 
-6. Autofill user on stripe checkout beforehand.
+6. Autofill user info on stripe checkout beforehand.
 
 7. Autofill user info on reservation form.
 
-8. Delete button in admin menu crud isnt working.
+8. Image editor for all image uploads.
 
-9. Image editor for image uploads.
+9. All price formating should be according to the region in the frontend.
 
-10. Price formating should be according to the region.
+10. On admin dashboard, larger amounts of should shrink and add suffix eg: K, M, B
 
-11. On admin dashboard, larger amount of prices should shrink as K, M, B etc
+11. Limit the amount of characters in for every input field.
 
-12. Limit the amount of characters in a review.
+12. On successfull order, generate a pdf receipt for the user to download.
 
-13. On successfull order, generate a pdf receipt for the user to download.
+13. User can download any order's pdf receipt inside account page.
 
-14. User can download any order's pdf receipt inside account page.
+14. Handle not-successful checkout.
 
-15. Handle not-successful checkout
+15. Upon reservation confirmation, that reservation should be assigned a table number. And one table will only belong to one reservation on that day and time.
 
-16. Some validation for cart inputs
+16. We should have ingrediants for each dish.
