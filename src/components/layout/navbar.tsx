@@ -89,8 +89,10 @@ export function Navbar() {
           ))}
         </ul>
 
+        {/* Desktop Right Side */}
         <div className="hidden md:flex items-center gap-2">
           <CartDrawer />
+
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {mounted && theme === 'dark' ? (
               <Sun className="h-4 w-4" />
@@ -138,9 +140,14 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild>
-              <Link href="/reservations">Book a Table</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link href="/sign-in">Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/sign-up">Sign Up</Link>
+              </Button>
+            </div>
           )}
         </div>
 
