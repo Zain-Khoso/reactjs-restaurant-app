@@ -10,48 +10,40 @@ import { useCartStore } from '@/store/cart';
 
 export default function OrderSuccessPage() {
   const clearCart = useCartStore((s) => s.clearCart);
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
 
   React.useEffect(() => {
     clearCart();
   }, []);
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center gap-6 px-4 text-center">
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-        <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 py-16">
+      <div className="flex flex-col items-center text-center gap-6 max-w-md w-full">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+          <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+        </div>
 
-        <React.Suspense>
-          <MainUI />
-        </React.Suspense>
+        <div className="flex flex-col gap-2">
+          <H1 className="text-3xl">Order Confirmed!</H1>
+          <Lead className="text-muted-foreground">
+            Thank you for your order. We&apos;ve received your payment and are already preparing
+            your food.
+          </Lead>
+          {orderId && (
+            <Muted className="text-xs mt-1">Order ID: {orderId.slice(0, 8).toUpperCase()}</Muted>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <Link href="/account">View My Orders</Link>
+          </Button>
+          <Button asChild className="w-full sm:w-auto">
+            <Link href="/menu">Order Again</Link>
+          </Button>
+        </div>
       </div>
     </div>
-  );
-}
-
-function MainUI() {
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get('orderId');
-
-  return (
-    <>
-      <div className="flex flex-col gap-2">
-        <H1 className="text-3xl">Order Confirmed!</H1>
-        <Lead className="text-muted-foreground max-w-md">
-          Thank you for your order. We&apos;ve received your payment and are already preparing your
-          food.
-        </Lead>
-        {orderId && (
-          <Muted className="text-xs mt-1">Order ID: {orderId.slice(0, 8).toUpperCase()}</Muted>
-        )}
-      </div>
-      <div className="flex flex-col sm:flex-row gap-3 mt-2">
-        <Button asChild variant="outline">
-          <Link href="/account">View My Orders</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/menu">Order Again</Link>
-        </Button>
-      </div>
-    </>
   );
 }

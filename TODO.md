@@ -4,15 +4,13 @@ Listed below are some bugs that need fixing and some features that need implemen
 
 ## Fixes
 
-1. Order success page styles arent correct. The button and text appear side by side. Cramped together.
+1. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
 
-2. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
+2. Remove blog link from the footer.
 
-3. Remove blog link from the footer.
+3. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
 
-4. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
-
-5. Try having nav-links on the left side. Beside the logo.
+4. Try having nav-links on the left side. Beside the logo.
 
 ## Features
 
@@ -47,3 +45,5 @@ Listed below are some bugs that need fixing and some features that need implemen
 15. Upon reservation confirmation, that reservation should be assigned a table number. And one table will only belong to one reservation on that day and time.
 
 16. We should have ingrediants for each dish.
+
+17. On order success page, The order id should be clickable and on click. Copy that id.
