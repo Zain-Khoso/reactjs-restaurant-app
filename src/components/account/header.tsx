@@ -1,17 +1,16 @@
+'use client';
+
+import { useUserStore } from '@/store/user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar';
 import { Badge } from '@/components/shadcn/badge';
 import { FadeIn } from '@/components/animations';
 import { H2, Muted } from '@/components/shadcn/typography';
 
-type User = {
-  name: string;
-  email: string;
-  image?: string | null;
-  role: string;
-  createdAt?: Date | string;
-};
+export function AccountHeader() {
+  const user = useUserStore((s) => s.user);
 
-export function AccountHeader({ user }: { user: User }) {
+  if (!user) return null;
+
   const initials = user.name
     ?.split(' ')
     .map((n) => n[0])

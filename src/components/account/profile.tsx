@@ -10,18 +10,24 @@ import { H3, Muted } from '@/components/shadcn/typography';
 import { User, Mail, Phone, Lock } from 'lucide-react';
 import { updateProfile } from '@/actions/account';
 import React from 'react';
+import { useUserStore } from '@/store/user';
 
 export function AccountProfile({ user }: { user: any }) {
+  const updateUser = useUserStore((s) => s.updateUser);
   const [success, setSuccess] = React.useState(false);
 
   const handleProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    await updateProfile({
-      name: data.get('name') as string,
-      phone: data.get('phone') as string,
-    });
+    const name = data.get('name') as string;
+    const phone = data.get('phone') as string;
+
+    await updateProfile({ name, phone });
+
+    // Update the Zustand store immediately
+    updateUser({ name, phone });
+
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
   };

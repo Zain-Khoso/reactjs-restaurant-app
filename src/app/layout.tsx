@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import './globals.css';
+import { UserProvider } from '@/components/providers/user-provider';
 
 const Font_Geist = Geist({
   variable: '--font-geist',
@@ -53,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider>{children}</UserProvider>
         </ThemeProvider>
       </body>
     </html>

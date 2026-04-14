@@ -4,15 +4,15 @@ Listed below are some bugs that need fixing and some features that need implemen
 
 ## Fixes
 
-1. Upon updating user name in account page. It's does not change in the navbar automatically. (we should have a zustand store for use data. So when it is updated at one place. it updates everywhere else too)
+1. Order success page styles arent correct. The button and text appear side by side. Cramped together.
 
-2. Order success page styles arent correct. The button and text appear side by side. Cramped together.
+2. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
 
-3. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
+3. Remove blog link from the footer.
 
-4. Remove blog link from the footer.
+4. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
 
-5. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
+5. Try having nav-links on the left side. Beside the logo.
 
 ## Features
 

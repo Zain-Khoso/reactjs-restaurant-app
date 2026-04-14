@@ -9,7 +9,8 @@ import { Menu, Sun, Moon, ExternalLink, LogIn, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import { CartDrawer } from '../cart/drawer';
 // Add these imports
-import { useSession, signOut } from '@/utils/auth-client';
+import { signOut } from '@/utils/auth-client';
+import { useUserStore } from '@/store/user';
 import { User, LogOut, LayoutDashboard } from 'lucide-react';
 import {
   DropdownMenu,
@@ -45,8 +46,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const { data: session } = useSession();
-  const user = session?.user;
+  const user = useUserStore((s) => s.user);
 
   React.useEffect(() => {
     setMounted(true);

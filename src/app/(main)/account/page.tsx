@@ -11,14 +11,13 @@ export const metadata: Metadata = {
 
 export default async function AccountPage() {
   const user = await getUser();
-
   if (!user) redirect('/sign-in');
 
   const [orders, reservations] = await Promise.all([getUserOrders(), getUserReservations()]);
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <AccountHeader user={user} />
+      <AccountHeader />
       <AccountTabs orders={orders} reservations={reservations} user={user} />
     </div>
   );
