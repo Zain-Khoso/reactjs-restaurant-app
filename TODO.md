@@ -6,11 +6,9 @@ Listed below are some bugs that need fixing and some features that need implemen
 
 1. Add-Item button in admin menu crud does work, but the actual card only shows up after page reload.
 
-2. Remove blog link from the footer.
+2. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
 
-3. In menu page, we search for dish and when we remove all the text from the search field. The removed dishes do not appears again. It just shows empty space, where the remaining items should be.
-
-4. Try having nav-links on the left side. Beside the logo.
+3. Try having nav-links on the left side. Beside the logo.
 
 ## Features
 

@@ -146,13 +146,17 @@ export function Footer() {
         <div className="mx-auto max-w-7xl px-4 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <Muted>© Urban Dish, All Rights Reserved. Created by Zain Khoso</Muted>
           <div className="flex items-center gap-4">
-            {['Home', 'About Us', 'Blog', 'Contact'].map((item) => (
+            {[
+              ['Home', '/'],
+              ['About Us', '/about'],
+              ['Contact', '/contact'],
+            ].map((item) => (
               <Link
-                key={item}
-                href={`/${item.toLowerCase().replace(' ', '-')}`}
+                key={item[1]}
+                href={item[1]}
                 className="text-xs text-muted-foreground hover:text-primary transition-colors"
               >
-                {item}
+                {item[0]}
               </Link>
             ))}
           </div>
