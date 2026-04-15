@@ -54,6 +54,11 @@ export async function createCheckoutSession(input: CheckoutInput) {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
+    ...(user?.email && { customer_email: user.email }),
+    billing_address_collection: 'auto',
+    phone_number_collection: {
+      enabled: true,
+    },
     line_items: [
       ...input.items.map((item) => ({
         price_data: {
