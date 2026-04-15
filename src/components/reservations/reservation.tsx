@@ -22,6 +22,7 @@ import { cn } from '@/utils/index';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { createReservation } from '@/actions/reservations';
+import { useUserStore } from '@/store/user';
 
 const TIME_SLOTS = [
   '12:00 PM',
@@ -60,6 +61,8 @@ const INFO_CARDS = [
 ];
 
 export function ReservationsSection() {
+  const user = useUserStore((s) => s.user);
+
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
@@ -107,6 +110,14 @@ export function ReservationsSection() {
       setError(result.error ?? 'Something went wrong. Please try again.');
     }
   };
+
+  React.useEffect(() => {
+    if (user) {
+      setName(user.name ?? '');
+      setEmail(user.email ?? '');
+      setPhone(user.phone ?? '');
+    }
+  }, [user]);
 
   return (
     <section className="py-20 px-4">
