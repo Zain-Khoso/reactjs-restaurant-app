@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
+import { formatStat, formatCurrency } from '@/utils/format';
 
 ChartJS.register(
   CategoryScale,
@@ -59,22 +60,22 @@ export function AdminDashboard({ stats }: { stats: Stats }) {
   const STATS_CARDS = [
     {
       label: 'Total Orders',
-      value: stats.totalOrders.toString(),
+      value: formatStat(stats.totalOrders),
       icon: ShoppingBag,
     },
     {
       label: 'Revenue',
-      value: `Rs ${stats.totalRevenue.toLocaleString()}`,
+      value: `Rs ${formatStat(stats.totalRevenue)}`,
       icon: DollarSign,
     },
     {
       label: 'Reservations',
-      value: stats.totalReservations.toString(),
+      value: formatStat(stats.totalReservations),
       icon: CalendarCheck,
     },
     {
       label: 'Customers',
-      value: stats.totalCustomers.toString(),
+      value: formatStat(stats.totalCustomers),
       icon: Users,
     },
   ];
