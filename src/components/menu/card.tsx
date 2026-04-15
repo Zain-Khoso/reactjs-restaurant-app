@@ -10,6 +10,7 @@ import { useCartStore } from '@/store/cart';
 import Link from 'next/link';
 import { MenuItem } from '@/prisma/client';
 import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/utils/format';
 
 export function MenuCard({ dish }: { dish: MenuItem }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -56,7 +57,7 @@ export function MenuCard({ dish }: { dish: MenuItem }) {
           </Link>
           <Muted className="text-xs mt-1 line-clamp-2">{dish.description}</Muted>
         </div>
-        <p className="text-lg font-bold text-primary">Rs {dish.price.toLocaleString()}</p>
+        <p className="text-lg font-bold text-primary">{formatCurrency(dish.price)}</p>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"

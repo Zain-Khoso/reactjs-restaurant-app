@@ -10,6 +10,7 @@ import { StaggerChildren, StaggerItem, FadeIn } from '@/components/animations';
 import { useCartStore } from '@/store/cart';
 import { ShoppingCart, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/utils/format';
 
 type MenuItem = {
   id: string;
@@ -70,7 +71,7 @@ export function BestDishes({ dishes }: { dishes: MenuItem[] }) {
                     <H4 className="text-base">{dish.name}</H4>
                     <Muted className="text-xs mt-0.5 line-clamp-2">{dish.description}</Muted>
                   </div>
-                  <p className="text-lg font-bold text-primary">Rs {dish.price.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-primary">{formatCurrency(dish.price)}</p>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"

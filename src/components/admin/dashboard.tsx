@@ -65,7 +65,7 @@ export function AdminDashboard({ stats }: { stats: Stats }) {
     },
     {
       label: 'Revenue',
-      value: `Rs ${formatStat(stats.totalRevenue)}`,
+      value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
     },
     {
@@ -190,7 +190,7 @@ export function AdminDashboard({ stats }: { stats: Stats }) {
                         {order.status}
                       </span>
                       <p className="text-sm font-semibold text-primary">
-                        Rs {order.total.toLocaleString()}
+                        {formatCurrency(order.total)}
                       </p>
                     </div>
                   </div>

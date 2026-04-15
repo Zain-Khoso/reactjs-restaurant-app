@@ -16,6 +16,7 @@ import { Separator } from '@/components/shadcn/separator';
 import { Badge } from '@/components/shadcn/badge';
 import { H3, Muted } from '@/components/shadcn/typography';
 import { useCartStore } from '@/store/cart';
+import { formatCurrency } from '@/utils/format';
 
 const DELIVERY_FEE = 150;
 
@@ -87,9 +88,7 @@ export function CartDrawer() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
-                    <p className="text-sm text-primary font-bold">
-                      Rs {item.price.toLocaleString()}
-                    </p>
+                    <p className="text-sm text-primary font-bold">{formatCurrency(item.price)}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <button
@@ -127,16 +126,16 @@ export function CartDrawer() {
             <div className="flex flex-col gap-3 pt-4">
               <div className="flex items-center justify-between text-sm">
                 <Muted>Subtotal</Muted>
-                <Muted>Rs {subtotal.toLocaleString()}</Muted>
+                <Muted>{formatCurrency(subtotal)}</Muted>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <Muted>Delivery Fee</Muted>
-                <Muted>Rs {DELIVERY_FEE.toLocaleString()}</Muted>
+                <Muted>{formatCurrency(DELIVERY_FEE)}</Muted>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <p className="font-semibold">Total</p>
-                <p className="font-bold text-primary text-lg">Rs {total.toLocaleString()}</p>
+                <p className="font-bold text-primary text-lg">{formatCurrency(total)}</p>
               </div>
               <Button className="w-full mt-2" asChild onClick={() => setOpen(false)}>
                 <Link href="/order">Proceed to Checkout</Link>

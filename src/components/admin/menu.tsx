@@ -22,6 +22,7 @@ import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { createMenuItem, updateMenuItem, deleteMenuItem } from '@/actions/admin';
 import { uploadImage } from '@/actions/upload';
+import { formatCurrency } from '@/utils/format';
 
 type Category = { id: string; name: string; slug: string };
 type MenuItem = {
@@ -205,7 +206,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
                     <Muted className="text-xs capitalize">{item.category.name}</Muted>
                   </div>
                   <p className="text-sm font-bold text-primary shrink-0">
-                    Rs {item.price.toLocaleString()}
+                    {formatCurrency(item.price)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-1">

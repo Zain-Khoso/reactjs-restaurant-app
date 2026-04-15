@@ -11,6 +11,11 @@ export function formatStat(value: number): string {
   return value.toString();
 }
 
-export function formatCurrency(value: number, locale = 'en-PK'): string {
-  return new Intl.NumberFormat(locale).format(value);
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-PK', {
+    style: 'currency',
+    currency: 'PKR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }

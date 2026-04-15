@@ -9,6 +9,7 @@ import { Separator } from '@/components/shadcn/separator';
 import { H1, H2, Muted } from '@/components/shadcn/typography';
 import { ReviewsSection } from '@/components/reviews/reviews';
 import { AddToCartButton } from '@/components/menu/add-to-cart-button';
+import { formatCurrency } from '@/utils/format';
 
 export async function generateMetadata({
   params,
@@ -58,7 +59,7 @@ export default async function MenuItemPage({ params }: { params: Promise<{ slug:
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <H1 className="text-3xl">{item.name}</H1>
-            <p className="text-3xl font-bold text-primary">Rs {item.price.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-primary">{formatCurrency(item.price)}</p>
             {/* Badges now below title */}
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="secondary">{item.category.name}</Badge>

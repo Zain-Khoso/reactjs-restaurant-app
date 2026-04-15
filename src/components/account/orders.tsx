@@ -6,6 +6,7 @@ import { H3, H4, Muted } from '@/components/shadcn/typography';
 import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { formatCurrency } from '@/utils/format';
 
 const STATUS_STYLES: Record<string, string> = {
   DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -49,9 +50,7 @@ export function AccountOrders({ orders }: { orders: any[] }) {
                   >
                     {order.status}
                   </span>
-                  <p className="text-sm font-bold text-primary">
-                    Rs {order.total.toLocaleString()}
-                  </p>
+                  <p className="text-sm font-bold text-primary">{formatCurrency(order.total)}</p>
                 </div>
               </div>
               <div className="flex flex-col divide-y divide-border">
@@ -64,7 +63,7 @@ export function AccountOrders({ orders }: { orders: any[] }) {
                       <span className="text-sm">{item.menuItem.name}</span>
                     </div>
                     <Muted className="text-sm">
-                      Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                      {formatCurrency(item.unitPrice * item.quantity)}
                     </Muted>
                   </div>
                 ))}

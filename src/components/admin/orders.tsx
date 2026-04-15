@@ -15,6 +15,7 @@ import {
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { updateOrderStatus } from '@/actions/admin';
+import { formatCurrency } from '@/utils/format';
 
 const STATUS_STYLES: Record<string, string> = {
   DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -98,9 +99,7 @@ export function AdminOrders({ orders }: { orders: any[] }) {
                     >
                       {order.status}
                     </span>
-                    <p className="text-sm font-bold text-primary">
-                      Rs {order.total.toLocaleString()}
-                    </p>
+                    <p className="text-sm font-bold text-primary">{formatCurrency(order.total)}</p>
                     <Select
                       defaultValue={order.status}
                       onValueChange={(val) => handleStatusChange(order.id, val)}

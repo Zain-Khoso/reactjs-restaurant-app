@@ -15,6 +15,7 @@ import { H2, H3, H4, Muted, SectionLabel } from '@/components/shadcn/typography'
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { useCartStore } from '@/store/cart';
 import { createCheckoutSession } from '@/actions/stripe';
+import { formatCurrency } from '@/utils/format';
 
 const DELIVERY_FEE = 150;
 
@@ -109,9 +110,7 @@ export function OrderSection() {
                     </div>
                     <div className="flex flex-1 flex-col gap-1 min-w-0">
                       <H4 className="text-sm truncate">{item.name}</H4>
-                      <p className="text-sm font-bold text-primary">
-                        Rs {item.price.toLocaleString()}
-                      </p>
+                      <p className="text-sm font-bold text-primary">{formatCurrency(item.price)}</p>
                     </div>
                     <div className="flex flex-col items-end gap-3 shrink-0">
                       <button
@@ -232,7 +231,7 @@ export function OrderSection() {
                       {item.name} <span className="text-xs">x{item.quantity}</span>
                     </Muted>
                     <Muted className="text-sm shrink-0">
-                      Rs {(item.price * item.quantity).toLocaleString()}
+                      {formatCurrency(item.price * item.quantity)}
                     </Muted>
                   </div>
                 ))}
@@ -243,11 +242,11 @@ export function OrderSection() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Muted className="text-sm">Subtotal</Muted>
-                  <Muted className="text-sm">Rs {subtotal.toLocaleString()}</Muted>
+                  <Muted className="text-sm">{formatCurrency(subtotal)}</Muted>
                 </div>
                 <div className="flex items-center justify-between">
                   <Muted className="text-sm">Delivery Fee</Muted>
-                  <Muted className="text-sm">Rs {DELIVERY_FEE.toLocaleString()}</Muted>
+                  <Muted className="text-sm">{formatCurrency(DELIVERY_FEE)}</Muted>
                 </div>
               </div>
 
@@ -255,7 +254,7 @@ export function OrderSection() {
 
               <div className="flex items-center justify-between">
                 <p className="font-semibold">Total</p>
-                <p className="font-bold text-lg text-primary">Rs {total.toLocaleString()}</p>
+                <p className="font-bold text-lg text-primary">{formatCurrency(total)}</p>
               </div>
 
               {/* Update button and add error display in the summary card: */}
