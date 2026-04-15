@@ -130,3 +130,6 @@ export function FaqsSection() {
     </section>
   );
 }
+
+export const dynamic = 'force-static';
+export const revalidate = 3600;

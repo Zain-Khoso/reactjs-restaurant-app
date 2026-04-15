@@ -78,3 +78,6 @@ export default function TermsPage() {
     </>
   );
 }
+
+export const dynamic = 'force-static';
+export const revalidate = 86400; // once a day

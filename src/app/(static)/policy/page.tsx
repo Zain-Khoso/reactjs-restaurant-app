@@ -78,3 +78,6 @@ export default function PrivacyPolicyPage() {
     </>
   );
 }
+
+export const dynamic = 'force-static';
+export const revalidate = 86400;

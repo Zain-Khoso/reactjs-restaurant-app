@@ -18,3 +18,6 @@ export default function ContactPage() {
     </>
   );
 }
+
+export const dynamic = 'force-static';
+export const revalidate = 3600;
