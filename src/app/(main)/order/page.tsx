@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
+import { getDeliveryFee } from '@/actions/settings';
 import { OrderSection } from '@/components/order/order';
 
 export const metadata: Metadata = {
   title: 'Your Order',
-  description: 'Review your cart and complete your order.',
 };
 
-export default function OrderPage() {
+export default async function OrderPage() {
+  const deliveryFee = await getDeliveryFee();
   return (
     <div className="min-h-screen bg-muted/30">
-      <OrderSection />
+      <OrderSection deliveryFee={deliveryFee} />
     </div>
   );
 }

@@ -17,8 +17,7 @@ import { Badge } from '@/components/shadcn/badge';
 import { H3, Muted } from '@/components/shadcn/typography';
 import { useCartStore } from '@/store/cart';
 import { formatCurrency } from '@/utils/format';
-
-const DELIVERY_FEE = 150;
+import { useSettingsStore } from '@/store/settings';
 
 export function CartDrawer() {
   const { items, updateQuantity, removeItem } = useCartStore();
@@ -26,10 +25,11 @@ export function CartDrawer() {
   const subtotal = useCartStore((s) => s.subtotal());
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const deliveryFee = useSettingsStore((s) => s.deliveryFee);
 
   React.useEffect(() => setMounted(true), []);
 
-  const total = subtotal + DELIVERY_FEE;
+  const total = subtotal + deliveryFee;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -130,7 +130,7 @@ export function CartDrawer() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <Muted>Delivery Fee</Muted>
-                <Muted>{formatCurrency(DELIVERY_FEE)}</Muted>
+                <Muted>{formatCurrency(deliveryFee)}</Muted>
               </div>
               <Separator />
               <div className="flex items-center justify-between">

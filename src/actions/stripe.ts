@@ -3,10 +3,9 @@
 import Stripe from 'stripe';
 import { getUser } from '@/utils/session';
 import prisma from '@/utils/prisma';
+import { getDeliveryFee } from './settings';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-const DELIVERY_FEE = 150;
 
 type CartItem = {
   id: string;
@@ -25,6 +24,7 @@ type CheckoutInput = {
 
 export async function createCheckoutSession(input: CheckoutInput) {
   const user = await getUser();
+  const DELIVERY_FEE = await getDeliveryFee();
 
   const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + DELIVERY_FEE;

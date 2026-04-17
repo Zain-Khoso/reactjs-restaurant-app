@@ -17,6 +17,11 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { formatStat, formatCurrency } from '@/utils/format';
+import { updateDeliveryFee } from '@/actions/settings';
+import { useSettingsStore } from '@/store/settings';
+import { Input } from '../shadcn/input';
+import { Button } from '../shadcn/button';
+import React from 'react';
 
 ChartJS.register(
   CategoryScale,
@@ -200,6 +205,48 @@ export function AdminDashboard({ stats }: { stats: Stats }) {
           </CardContent>
         </Card>
       </FadeIn>
+
+      <DeliveryFeeCard />
     </div>
+  );
+}
+
+function DeliveryFeeCard() {
+  const { deliveryFee, setDeliveryFee } = useSettingsStore();
+  const [value, setValue] = React.useState(deliveryFee.toString());
+  const [saving, setSaving] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const fee = parseInt(value);
+    if (!isNaN(fee) && fee >= 0) {
+      await updateDeliveryFee(fee);
+      setDeliveryFee(fee);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+    setSaving(false);
+  };
+
+  return (
+    <Card className="border border-border shadow-sm">
+      <CardContent className="flex flex-col gap-4 p-6">
+        <H3 className="text-base">Delivery Fee</H3>
+        <div className="flex items-center gap-3">
+          <Input
+            type="number"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-32"
+            min={0}
+          />
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : saved ? 'Saved!' : 'Update'}
+          </Button>
+        </div>
+        <Muted className="text-xs">This fee is applied to all orders at checkout.</Muted>
+      </CardContent>
+    </Card>
   );
 }

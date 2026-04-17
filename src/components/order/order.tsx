@@ -17,13 +17,11 @@ import { useCartStore } from '@/store/cart';
 import { createCheckoutSession } from '@/actions/stripe';
 import { formatCurrency } from '@/utils/format';
 
-const DELIVERY_FEE = 150;
-
-export function OrderSection() {
+export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   const router = useRouter();
   const { items, updateQuantity, removeItem } = useCartStore();
   const subtotal = useCartStore((s) => s.subtotal());
-  const total = subtotal + DELIVERY_FEE;
+  const total = subtotal + deliveryFee;
 
   const [coupon, setCoupon] = React.useState('');
   const [deliveryName, setDeliveryName] = React.useState('');
@@ -246,7 +244,7 @@ export function OrderSection() {
                 </div>
                 <div className="flex items-center justify-between">
                   <Muted className="text-sm">Delivery Fee</Muted>
-                  <Muted className="text-sm">{formatCurrency(DELIVERY_FEE)}</Muted>
+                  <Muted className="text-sm">{formatCurrency(deliveryFee)}</Muted>
                 </div>
               </div>
 
