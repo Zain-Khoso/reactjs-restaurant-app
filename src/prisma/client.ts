@@ -91,3 +91,8 @@ export type Reservation = Prisma.ReservationModel
  * 
  */
 export type Review = Prisma.ReviewModel
+/**
+ * Model Settings
+ * 
+ */
+export type Settings = Prisma.SettingsModel

@@ -187,6 +187,15 @@ async function main() {
           tags: ['Vegan'],
         },
       }),
+    () =>
+      prisma.settings.upsert({
+        where: { key: 'delivery_fee' },
+        update: {},
+        create: {
+          key: 'delivery_fee',
+          value: '150',
+        },
+      }),
   ];
 
   for (const query of queries) {
