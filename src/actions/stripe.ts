@@ -84,8 +84,19 @@ export async function createCheckoutSession(input: CheckoutInput) {
       orderId: order.id,
     },
     success_url: `${process.env.BETTER_AUTH_URL}/order/success?orderId=${order.id}`,
-    cancel_url: `${process.env.BETTER_AUTH_URL}/order`,
+    cancel_url: `${process.env.BETTER_AUTH_URL}/order/cancel?orderId=${order.id}`,
   });
 
   return { url: session.url, orderId: order.id };
+}
+
+export async function cancelPendingOrder(orderId: string) {
+  try {
+    await prisma.order.update({
+      where: { id: orderId, status: 'PENDING' },
+      data: { status: 'CANCELLED' },
+    });
+  } catch {
+    // Order may not exist or already updated — ignore
+  }
 }
