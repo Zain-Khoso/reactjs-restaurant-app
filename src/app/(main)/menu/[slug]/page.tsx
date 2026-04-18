@@ -55,6 +55,26 @@ export default async function MenuItemPage({ params }: { params: Promise<{ slug:
           )}
         </div>
 
+        {/* Ingredients */}
+        {item.ingredients && item.ingredients.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <Separator />
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">Ingredients</p>
+              <div className="flex flex-wrap gap-2">
+                {item.ingredients.map((ingredient) => (
+                  <span
+                    key={ingredient}
+                    className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground"
+                  >
+                    {ingredient}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Details */}
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">

@@ -1,21 +1,32 @@
 'use server';
 
-export type ContactInput = {
+import { contactSchema } from '@/utils/validations';
+import { sanitizeInput } from '@/utils/sanitize';
+
+export async function submitContactForm(input: {
   name: string;
   email: string;
   subject: string;
   message: string;
-};
+}) {
+  const parsed = contactSchema.safeParse(input);
 
-export async function submitContactForm(input: ContactInput) {
-  // Basic validation
-  if (!input.name || !input.email || !input.subject || !input.message) {
-    return { success: false, error: 'All fields are required.' };
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.message ?? 'Invalid input.',
+    };
   }
 
-  // For now we just log it — later you can wire up email (Resend, Nodemailer etc.)
-  console.log('Contact form submission:', input);
+  // Sanitized data ready for storage or email
+  const sanitized = {
+    name: sanitizeInput(input.name),
+    email: sanitizeInput(input.email),
+    subject: sanitizeInput(input.subject),
+    message: sanitizeInput(input.message),
+  };
 
-  // Optionally store in DB — add a ContactMessage model later if needed
+  console.log('Contact form submission:', sanitized);
+
   return { success: true };
 }

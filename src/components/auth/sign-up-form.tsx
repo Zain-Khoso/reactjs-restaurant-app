@@ -15,6 +15,7 @@ import { Separator } from '@/components/shadcn/separator';
 import { FadeIn } from '@/components/animations';
 // Typography
 import { H2, Muted } from '@/components/shadcn/typography';
+import { PasswordStrength } from '../shadcn/password-strength';
 
 export function SignUpForm() {
   const router = useRouter();
@@ -143,6 +144,7 @@ export function SignUpForm() {
                 placeholder="John Doe"
                 autoComplete="name"
                 value={name}
+                maxLength={50}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
@@ -159,6 +161,7 @@ export function SignUpForm() {
                 placeholder="john@example.com"
                 autoComplete="email"
                 value={email}
+                maxLength={100}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
@@ -174,20 +177,21 @@ export function SignUpForm() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  autoComplete="new-password"
-                  className="pr-10"
+                  maxLength={64}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <PasswordStrength password={password} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -203,6 +207,7 @@ export function SignUpForm() {
                   autoComplete="new-password"
                   className="pr-10"
                   value={confirm}
+                  maxLength={64}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
                 />

@@ -176,6 +176,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                       id="delivery-name"
                       placeholder="John Doe"
                       value={deliveryName}
+                      maxLength={50}
                       onChange={(e) => setDeliveryName(e.target.value)}
                     />
                   </div>
@@ -185,6 +186,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                       id="delivery-phone"
                       placeholder="+92 300 0000000"
                       value={deliveryPhone}
+                      maxLength={20}
                       onChange={(e) => setDeliveryPhone(e.target.value)}
                     />
                   </div>
@@ -194,6 +196,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                       id="delivery-address"
                       placeholder="123 Street, City"
                       value={deliveryAddress}
+                      maxLength={200}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
                     />
                   </div>
@@ -207,6 +210,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                       rows={3}
                       className="resize-none"
                       value={deliveryNotes}
+                      maxLength={500}
                       onChange={(e) => setDeliveryNotes(e.target.value)}
                     />
                   </div>

@@ -156,6 +156,7 @@ export function ReservationsSection() {
                       id="res-name"
                       placeholder="John Doe"
                       value={name}
+                      maxLength={50}
                       onChange={(e) => setName(e.target.value)}
                       required
                     />
@@ -170,6 +171,7 @@ export function ReservationsSection() {
                       type="email"
                       placeholder="john@example.com"
                       value={email}
+                      maxLength={100}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
@@ -184,6 +186,7 @@ export function ReservationsSection() {
                       type="tel"
                       placeholder="+92 300 0000000"
                       value={phone}
+                      maxLength={20}
                       onChange={(e) => setPhone(e.target.value)}
                       required
                     />
@@ -286,6 +289,7 @@ export function ReservationsSection() {
                     rows={4}
                     className="resize-none"
                     value={notes}
+                    maxLength={500}
                     onChange={(e) => setNotes(e.target.value)}
                   />
                 </div>

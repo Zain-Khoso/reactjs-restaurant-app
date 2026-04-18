@@ -3,6 +3,9 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/utils/session';
 import prisma from '@/utils/prisma';
+import { sanitizeArray, sanitizeInput } from '@/utils/sanitize';
+import { menuItemSchema } from '@/utils/validations';
+import { MenuItem } from '@/prisma/client';
 
 // ── Dashboard ─────────────────────────────────────────────────
 
@@ -72,43 +75,57 @@ export async function getAdminCategories() {
   });
 }
 
-export async function createMenuItem(data: {
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  categoryId: string;
-  image?: string;
-  tags: string[];
-  featured: boolean;
-  available: boolean;
-}) {
+export async function createMenuItem(data: MenuItem) {
   await requireAdmin();
 
-  await prisma.menuItem.create({ data });
+  const parsed = menuItemSchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.message ?? 'Invalid input.',
+    };
+  }
+
+  await prisma.menuItem.create({
+    data: {
+      name: sanitizeInput(data.name),
+      slug: sanitizeInput(data.slug),
+      description: sanitizeInput(data.description),
+      price: data.price,
+      categoryId: data.categoryId,
+      image: data.image ?? null,
+      tags: sanitizeArray(data.tags),
+      ingredients: sanitizeArray(data.ingredients),
+      featured: data.featured,
+      available: data.available,
+    },
+  });
+
   revalidatePath('/admin/menu');
   revalidatePath('/menu');
   revalidatePath('/');
   return { success: true };
 }
 
-export async function updateMenuItem(
-  id: string,
-  data: {
-    name?: string;
-    slug?: string;
-    description?: string;
-    price?: number;
-    categoryId?: string;
-    image?: string;
-    tags?: string[];
-    featured?: boolean;
-    available?: boolean;
-  }
-) {
+export async function updateMenuItem(id: string, data: MenuItem) {
   await requireAdmin();
 
-  await prisma.menuItem.update({ where: { id }, data });
+  await prisma.menuItem.update({
+    where: { id },
+    data: {
+      ...(data.name && { name: sanitizeInput(data.name) }),
+      ...(data.slug && { slug: sanitizeInput(data.slug) }),
+      ...(data.description && { description: sanitizeInput(data.description) }),
+      ...(data.price !== undefined && { price: data.price }),
+      ...(data.categoryId && { categoryId: data.categoryId }),
+      ...(data.image !== undefined && { image: data.image }),
+      ...(data.tags && { tags: sanitizeArray(data.tags) }),
+      ...(data.ingredients && { ingredients: sanitizeArray(data.ingredients) }),
+      ...(data.featured !== undefined && { featured: data.featured }),
+      ...(data.available !== undefined && { available: data.available }),
+    },
+  });
+
   revalidatePath('/admin/menu');
   revalidatePath('/menu');
   revalidatePath('/');

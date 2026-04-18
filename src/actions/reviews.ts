@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/utils/session';
 import prisma from '@/utils/prisma';
+import { sanitizeOptional } from '@/utils/sanitize';
+import { reviewSchema } from '@/utils/validations';
 
 export async function getMenuItemReviews(menuItemId: string) {
   return prisma.review.findMany({
@@ -19,7 +21,14 @@ export async function createReview(input: {
 }) {
   const user = await requireUser();
 
-  // Check if user already reviewed this item
+  const parsed = reviewSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.message ?? 'Invalid input.',
+    };
+  }
+
   const existing = await prisma.review.findUnique({
     where: {
       userId_menuItemId: {
@@ -38,7 +47,7 @@ export async function createReview(input: {
       userId: user.id,
       menuItemId: input.menuItemId,
       rating: input.rating,
-      comment: input.comment ?? null,
+      comment: sanitizeOptional(input.comment),
     },
   });
 

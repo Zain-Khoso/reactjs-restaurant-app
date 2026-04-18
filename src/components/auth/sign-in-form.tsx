@@ -128,6 +128,7 @@ export function SignInForm() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                maxLength={100}
                 required
               />
             </div>
@@ -150,6 +151,7 @@ export function SignInForm() {
                   autoComplete="current-password"
                   className="pr-10"
                   value={password}
+                  maxLength={64}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />

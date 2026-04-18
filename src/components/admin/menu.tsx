@@ -23,20 +23,7 @@ import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { createMenuItem, updateMenuItem, deleteMenuItem } from '@/actions/admin';
 import { uploadImage } from '@/actions/upload';
 import { formatCurrency } from '@/utils/format';
-
-type Category = { id: string; name: string; slug: string };
-type MenuItem = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  image: string | null;
-  category: Category;
-  tags: string[];
-  featured: boolean;
-  available: boolean;
-};
+import { MenuItem, Category } from '@/prisma/client';
 
 const CATEGORIES_FILTER = ['ALL', 'starters', 'mains', 'desserts', 'drinks'];
 
@@ -47,6 +34,7 @@ const DEFAULT_FORM = {
   price: '',
   categoryId: '',
   tags: '',
+  ingredients: '', // ← add
   featured: false,
   available: true,
   image: '',
@@ -64,7 +52,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
 
   const filtered = items.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = categoryFilter === 'ALL' || item.category.slug === categoryFilter;
+    const matchesCategory = categoryFilter === 'ALL' || item.categoryId === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -81,11 +69,12 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
       slug: item.slug,
       description: item.description,
       price: item.price.toString(),
-      categoryId: item.category.id,
+      categoryId: item.categoryId,
       tags: item.tags.join(', '),
       featured: item.featured,
       available: item.available,
       image: item.image ?? '',
+      ingredients: item.ingredients?.join(', ') ?? '',
     });
     setDialogOpen(true);
   };
@@ -103,7 +92,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
 
   const handleSave = async () => {
     setSaving(true);
-    const data = {
+    const data: any = {
       name: form.name,
       slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
       description: form.description,
@@ -115,7 +104,11 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
         .filter(Boolean),
       featured: form.featured,
       available: form.available,
-      image: form.image || undefined,
+      image: form.image || null,
+      ingredients: form.ingredients
+        .split(',')
+        .map((i) => i.trim())
+        .filter(Boolean),
     };
 
     if (editingItem) {
@@ -203,7 +196,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <H4 className="text-sm">{item.name}</H4>
-                    <Muted className="text-xs capitalize">{item.category.name}</Muted>
+                    <Muted className="text-xs capitalize">{item.categoryId}</Muted>
                   </div>
                   <p className="text-sm font-bold text-primary shrink-0">
                     {formatCurrency(item.price)}
@@ -282,6 +275,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
                 id="item-name"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                maxLength={100}
                 placeholder="Margherita Pizza"
               />
             </div>
@@ -292,6 +286,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
               <Textarea
                 id="item-desc"
                 value={form.description}
+                maxLength={500}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Classic tomato sauce, fresh mozzarella..."
                 rows={3}
@@ -307,6 +302,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
                   id="item-price"
                   type="number"
                   value={form.price}
+                  max={100000}
                   onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                   placeholder="1299"
                 />
@@ -339,8 +335,23 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
               <Input
                 id="item-tags"
                 value={form.tags}
+                maxLength={200}
                 onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
                 placeholder="Vegetarian, Spicy, Gluten Free"
+              />
+            </div>
+
+            {/* Ingredients */}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="item-ingredients">
+                Ingredients <span className="text-muted-foreground text-xs">(comma separated)</span>
+              </Label>
+              <Input
+                id="item-ingredients"
+                value={form.ingredients}
+                onChange={(e) => setForm((f) => ({ ...f, ingredients: e.target.value }))}
+                placeholder="Flour, Tomato, Mozzarella, Basil"
+                maxLength={500}
               />
             </div>
 

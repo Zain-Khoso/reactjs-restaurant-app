@@ -4,6 +4,8 @@ import Stripe from 'stripe';
 import { getUser } from '@/utils/session';
 import prisma from '@/utils/prisma';
 import { getDeliveryFee } from './settings';
+import { sanitizeInput, sanitizeOptional } from '@/utils/sanitize';
+import { checkoutSchema } from '@/utils/validations';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -15,31 +17,40 @@ type CartItem = {
   quantity: number;
 };
 
-type CheckoutInput = {
+export async function createCheckoutSession(input: {
   items: CartItem[];
   address: string;
   phone: string;
   notes?: string;
-};
+}) {
+  // Validate
+  const parsed = checkoutSchema.safeParse({
+    deliveryName: 'Guest', // name not collected separately
+    deliveryPhone: input.phone,
+    deliveryAddress: input.address,
+    deliveryNotes: input.notes,
+  });
 
-export async function createCheckoutSession(input: CheckoutInput) {
+  if (!parsed.success) {
+    return {
+      url: null,
+      error: parsed.error.message ?? 'Invalid input.',
+    };
+  }
+
   const user = await getUser();
   const DELIVERY_FEE = await getDeliveryFee();
 
-  const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const total = subtotal + DELIVERY_FEE;
-
-  // Create order in DB first with PENDING status
   const order = await prisma.order.create({
     data: {
       userId: user?.id ?? null,
       status: 'PENDING',
-      subtotal,
-      total,
+      subtotal: input.items.reduce((s, i) => s + i.price * i.quantity, 0),
+      total: input.items.reduce((s, i) => s + i.price * i.quantity, 0) + DELIVERY_FEE,
       deliveryFee: DELIVERY_FEE,
-      address: input.address,
-      phone: input.phone,
-      notes: input.notes ?? null,
+      address: sanitizeInput(input.address),
+      phone: sanitizeInput(input.phone),
+      notes: sanitizeOptional(input.notes),
       items: {
         create: input.items.map((item) => ({
           menuItemId: item.id,

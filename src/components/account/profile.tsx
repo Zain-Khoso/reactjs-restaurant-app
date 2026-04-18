@@ -46,21 +46,27 @@ export function AccountProfile({ user }: { user: any }) {
                 <User className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Full Name
               </Label>
-              <Input id="name" name="name" defaultValue={user.name} />
+              <Input id="name" name="name" defaultValue={user.name} maxLength={50} />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">
                 <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Email
               </Label>
-              <Input id="email" value={user.email} disabled className="opacity-60" />
+              <Input
+                id="email"
+                value={user.email}
+                disabled
+                className="opacity-60"
+                maxLength={100}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="phone">
                 <Phone className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                 Phone
               </Label>
-              <Input id="phone" name="phone" defaultValue={user.phone ?? ''} />
+              <Input id="phone" name="phone" defaultValue={user.phone ?? ''} maxLength={20} />
             </div>
             <div className="sm:col-span-2 flex items-center gap-3">
               <Button type="submit" className="w-fit">

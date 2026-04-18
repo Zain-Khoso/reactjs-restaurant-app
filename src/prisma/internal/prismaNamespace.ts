@@ -1351,6 +1351,7 @@ export const MenuItemScalarFieldEnum = {
   available: 'available',
   featured: 'featured',
   tags: 'tags',
+  ingredients: 'ingredients',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
