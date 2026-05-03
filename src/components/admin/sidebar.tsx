@@ -3,7 +3,14 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, CalendarCheck, Menu } from 'lucide-react';
+import {
+  LayoutDashboard,
+  UtensilsCrossed,
+  ShoppingBag,
+  CalendarCheck,
+  Menu,
+  FileText,
+} from 'lucide-react';
 import { Button } from '@/components/shadcn/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/shadcn/sheet';
 import { cn } from '@/utils/index';
@@ -13,6 +20,7 @@ const NAV_ITEMS = [
   { label: 'Menu', href: '/admin/menu', icon: UtensilsCrossed },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Reservations', href: '/admin/reservations', icon: CalendarCheck },
+  { label: 'Pages', href: '/admin/pages', icon: FileText },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

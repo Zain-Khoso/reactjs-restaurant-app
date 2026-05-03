@@ -3,6 +3,64 @@ import { PrismaClient } from '../src/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
+const termsContent = `
+<h2>1. Acceptance of Terms</h2>
+<p>By accessing or using the Urban Dish website and services, you agree to be bound by these Terms and Conditions.</p>
+
+<h2>2. Use of Services</h2>
+<p>Urban Dish provides an online platform for browsing our menu, placing food orders, and making table reservations.</p>
+
+<h2>3. Orders and Payments</h2>
+<p>All orders placed through Urban Dish are subject to availability and confirmation. Prices are listed in Pakistani Rupees (PKR) and are subject to change without notice.</p>
+
+<h2>4. Reservations</h2>
+<p>Table reservations are subject to availability. We ask that you notify us at least 2 hours in advance if you need to cancel or modify your reservation.</p>
+
+<h2>5. User Accounts</h2>
+<p>You are responsible for maintaining the confidentiality of your account credentials.</p>
+
+<h2>6. Intellectual Property</h2>
+<p>All content on this website is the property of Urban Dish and is protected by applicable intellectual property laws.</p>
+
+<h2>7. Limitation of Liability</h2>
+<p>Urban Dish shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services.</p>
+
+<h2>8. Changes to Terms</h2>
+<p>We reserve the right to update these Terms and Conditions at any time.</p>
+
+<h2>9. Contact</h2>
+<p>If you have any questions, please contact us at <a href="mailto:contact@urbandish.com">contact@urbandish.com</a>.</p>
+`.trim();
+
+const privacyContent = `
+<h2>1. Information We Collect</h2>
+<p>When you use Urban Dish, we may collect your name, email address, phone number, delivery address, and payment information.</p>
+
+<h2>2. How We Use Your Information</h2>
+<p>We use the information we collect to process your orders and reservations, communicate with you, and improve our services.</p>
+
+<h2>3. Cookies</h2>
+<p>Urban Dish uses cookies to enhance your browsing experience and analyze site traffic.</p>
+
+<h2>4. Data Sharing</h2>
+<p>We may share your information with trusted third-party service providers who assist in operating our website.</p>
+
+<h2>5. Data Security</h2>
+<p>We implement industry-standard security measures to protect your personal data.</p>
+
+<h2>6. Data Retention</h2>
+<p>We retain your personal data for as long as your account is active or as needed to provide services.</p>
+
+<h2>7. Your Rights</h2>
+<p>You have the right to access, correct, or delete your personal data at any time.</p>
+
+<h2>8. Changes to This Policy</h2>
+<p>We may update this Privacy Policy from time to time.</p>
+
+<h2>9. Contact</h2>
+<p>If you have any questions, please reach out at <a href="mailto:contact@urbandish.com">contact@urbandish.com</a>.</p>
+`.trim();
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
 });
@@ -194,6 +252,27 @@ async function main() {
         create: {
           key: 'delivery_fee',
           value: '150',
+        },
+      }),
+    () =>
+      prisma.pageContent.upsert({
+        where: { key: 'terms' },
+        update: {},
+        create: {
+          key: 'terms',
+          title: 'Terms & Conditions',
+          content: termsContent,
+        },
+      }),
+
+    () =>
+      prisma.pageContent.upsert({
+        where: { key: 'policy' },
+        update: {},
+        create: {
+          key: 'policy',
+          title: 'Privacy Policy',
+          content: privacyContent,
         },
       }),
   ];

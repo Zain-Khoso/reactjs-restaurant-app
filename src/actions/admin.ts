@@ -192,3 +192,37 @@ export async function updateReservationStatus(id: string, status: 'CONFIRMED' | 
   revalidatePath('/account');
   return { success: true };
 }
+
+export async function getPageContent(key: string) {
+  return prisma.pageContent.findUnique({
+    where: { key },
+  });
+}
+
+export async function getAllPageContent() {
+  await requireAdmin();
+  return prisma.pageContent.findMany({
+    orderBy: { key: 'asc' },
+  });
+}
+
+export async function updatePageContent(key: string, data: { title: string; content: string }) {
+  await requireAdmin();
+
+  await prisma.pageContent.upsert({
+    where: { key },
+    update: {
+      title: sanitizeInput(data.title),
+      content: sanitizeInput(data.content),
+    },
+    create: {
+      key,
+      title: sanitizeInput(data.title),
+      content: sanitizeInput(data.content),
+    },
+  });
+
+  revalidatePath(`/${key}`);
+  revalidatePath('/admin/pages');
+  return { success: true };
+}

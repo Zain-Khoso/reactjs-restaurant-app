@@ -72,3 +72,8 @@ export type Review = Prisma.ReviewModel
  * 
  */
 export type Settings = Prisma.SettingsModel
+/**
+ * Model PageContent
+ * 
+ */
+export type PageContent = Prisma.PageContentModel
