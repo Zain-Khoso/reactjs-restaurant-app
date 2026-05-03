@@ -1,7 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { contactSchema, type ContactInput } from '@/utils/validations';
+import { submitContactForm } from '@/actions/contact';
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { Label } from '@/components/shadcn/label';
@@ -10,7 +14,6 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { Separator } from '@/components/shadcn/separator';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, Muted, SectionLabel } from '@/components/shadcn/typography';
-import { submitContactForm } from '@/actions/contact';
 
 const CONTACT_INFO = [
   { icon: MapPin, label: 'Address', value: '123 Street, Sukkur, Pakistan' },
@@ -24,31 +27,26 @@ const HOURS = [
 ];
 
 export function ContactSection() {
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [subject, setSubject] = React.useState('');
-  const [message, setMessage] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [serverError, setServerError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactInput>({
+    resolver: zodResolver(contactSchema),
+  });
 
-    const result = await submitContactForm({ name, email, subject, message });
-
-    setLoading(false);
-
+  const onSubmit = async (data: ContactInput) => {
+    setServerError('');
+    const result = await submitContactForm(data);
     if (result.success) {
       setSuccess(true);
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
+      reset();
     } else {
-      setError(result.error ?? 'Something went wrong.');
+      setServerError(result.error ?? 'Something went wrong.');
     }
   };
 
@@ -75,17 +73,12 @@ export function ContactSection() {
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
+                  <Input id="name" placeholder="John Doe" maxLength={50} {...register('name')} />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -93,45 +86,53 @@ export function ContactSection() {
                     id="email"
                     type="email"
                     placeholder="john@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    maxLength={100}
+                    {...register('email')}
                   />
+                  {errors.email && (
+                    <p className="text-xs text-destructive">{errors.email.message}</p>
+                  )}
                 </div>
               </div>
+
               <div className="flex flex-col gap-2">
                 <Label htmlFor="subject">Subject</Label>
                 <Input
                   id="subject"
                   placeholder="How can we help?"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  required
+                  maxLength={100}
+                  {...register('subject')}
                 />
+                {errors.subject && (
+                  <p className="text-xs text-destructive">{errors.subject.message}</p>
+                )}
               </div>
+
               <div className="flex flex-col gap-2">
                 <Label htmlFor="message">Message</Label>
                 <Textarea
                   id="message"
                   placeholder="Write your message here..."
                   rows={5}
+                  maxLength={1000}
                   className="resize-none"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
+                  {...register('message')}
                 />
+                {errors.message && (
+                  <p className="text-xs text-destructive">{errors.message.message}</p>
+                )}
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-              <Button type="submit" className="w-full sm:w-fit" disabled={loading}>
-                {loading ? 'Sending...' : 'Send Message'}
+              <Button type="submit" className="w-full sm:w-fit" disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
             </form>
           )}
         </FadeIn>
 
-        {/* Right — Info + Hours */}
+        {/* Right — Info */}
         <FadeIn direction="left" className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <div>

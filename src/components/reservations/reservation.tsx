@@ -1,8 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { CalendarIcon, Clock, Users, User, Mail, Phone, NotebookPen } from 'lucide-react';
+import { reservationSchema, type ReservationInput } from '@/utils/validations';
+import { createReservation } from '@/actions/reservations';
+import { useUserStore } from '@/store/user';
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { Label } from '@/components/shadcn/label';
@@ -21,8 +26,6 @@ import { Separator } from '@/components/shadcn/separator';
 import { cn } from '@/utils/index';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, Muted, SectionLabel } from '@/components/shadcn/typography';
-import { createReservation } from '@/actions/reservations';
-import { useUserStore } from '@/store/user';
 
 const TIME_SLOTS = [
   '12:00 PM',
@@ -48,11 +51,7 @@ const INFO_CARDS = [
     title: 'Opening Hours',
     lines: ['Mon – Sat: 7:00 am – 11:00 pm', 'Sunday: 12:00 pm – 9:00 pm'],
   },
-  {
-    icon: Users,
-    title: 'Large Groups',
-    lines: ['For parties over 10', 'please call us directly'],
-  },
+  { icon: Users, title: 'Large Groups', lines: ['For parties over 10', 'please call us directly'] },
   {
     icon: CalendarIcon,
     title: 'Cancellations',
@@ -62,67 +61,47 @@ const INFO_CARDS = [
 
 export function ReservationsSection() {
   const user = useUserStore((s) => s.user);
-
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phone, setPhone] = React.useState('');
-  const [date, setDate] = React.useState<Date | undefined>();
-  const [time, setTime] = React.useState('');
-  const [partySize, setPartySize] = React.useState('');
-  const [notes, setNotes] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [serverError, setServerError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<ReservationInput>({
+    resolver: zodResolver(reservationSchema),
+  });
 
-    if (!date || !time || !partySize) {
-      setError('Please fill in all required fields including date, time and party size.');
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await createReservation({
-      name,
-      email,
-      phone,
-      date,
-      time,
-      partySize: partySize === '10+' ? 10 : parseInt(partySize),
-      notes: notes || undefined,
-    });
-
-    setLoading(false);
-
-    if (result.success) {
-      setSuccess(true);
-      setName('');
-      setEmail('');
-      setPhone('');
-      setDate(undefined);
-      setTime('');
-      setPartySize('');
-      setNotes('');
-    } else {
-      setError(result.error ?? 'Something went wrong. Please try again.');
-    }
-  };
-
+  // Autofill from user store
   React.useEffect(() => {
     if (user) {
-      setName(user.name ?? '');
-      setEmail(user.email ?? '');
-      setPhone(user.phone ?? '');
+      setValue('name', user.name ?? '');
+      setValue('email', user.email ?? '');
+      setValue('phone', user.phone ?? '');
     }
-  }, [user]);
+  }, [user, setValue]);
+
+  const onSubmit = async (data: ReservationInput) => {
+    setServerError('');
+    const result = await createReservation({
+      ...data,
+      partySize: data.partySize === '10+' ? 10 : parseInt(data.partySize),
+    });
+    if (result.success) {
+      setSuccess(true);
+      reset();
+    } else {
+      setServerError(result.error ?? 'Something went wrong.');
+    }
+  };
 
   return (
     <section className="py-20 px-4">
       <div className="mx-auto max-w-7xl grid grid-cols-1 gap-12 lg:grid-cols-3">
-        {/* Left — Form (2 cols) */}
+        {/* Left — Form */}
         <FadeIn direction="right" className="lg:col-span-2 flex flex-col gap-8">
           <div>
             <SectionLabel>Make a Booking</SectionLabel>
@@ -142,7 +121,7 @@ export function ReservationsSection() {
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
               {/* Personal Details */}
               <div className="flex flex-col gap-4">
                 <H3 className="text-base text-muted-foreground font-medium">Personal Details</H3>
@@ -155,11 +134,12 @@ export function ReservationsSection() {
                     <Input
                       id="res-name"
                       placeholder="John Doe"
-                      value={name}
                       maxLength={50}
-                      onChange={(e) => setName(e.target.value)}
-                      required
+                      {...register('name')}
                     />
+                    {errors.name && (
+                      <p className="text-xs text-destructive">{errors.name.message}</p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="res-email">
@@ -170,11 +150,12 @@ export function ReservationsSection() {
                       id="res-email"
                       type="email"
                       placeholder="john@example.com"
-                      value={email}
                       maxLength={100}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      {...register('email')}
                     />
+                    {errors.email && (
+                      <p className="text-xs text-destructive">{errors.email.message}</p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="res-phone">
@@ -185,11 +166,12 @@ export function ReservationsSection() {
                       id="res-phone"
                       type="tel"
                       placeholder="+92 300 0000000"
-                      value={phone}
                       maxLength={20}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
+                      {...register('phone')}
                     />
+                    {errors.phone && (
+                      <p className="text-xs text-destructive">{errors.phone.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -206,29 +188,38 @@ export function ReservationsSection() {
                       <CalendarIcon className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                       Date <span className="text-destructive">*</span>
                     </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            'w-full justify-start text-left font-normal',
-                            !date && 'text-muted-foreground'
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, 'PPP') : 'Pick a date'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Controller
+                      name="date"
+                      control={control}
+                      render={({ field }) => (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full justify-start text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? format(field.value, 'PPP') : 'Pick a date'}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    />
+                    {errors.date && (
+                      <p className="text-xs text-destructive">{errors.date.message}</p>
+                    )}
                   </div>
 
                   {/* Time */}
@@ -237,18 +228,27 @@ export function ReservationsSection() {
                       <Clock className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                       Time <span className="text-destructive">*</span>
                     </Label>
-                    <Select value={time} onValueChange={setTime}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TIME_SLOTS.map((slot) => (
-                          <SelectItem key={slot} value={slot}>
-                            {slot}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="time"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a time" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TIME_SLOTS.map((slot) => (
+                              <SelectItem key={slot} value={slot}>
+                                {slot}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.time && (
+                      <p className="text-xs text-destructive">{errors.time.message}</p>
+                    )}
                   </div>
 
                   {/* Party Size */}
@@ -257,25 +257,34 @@ export function ReservationsSection() {
                       <Users className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
                       Party Size <span className="text-destructive">*</span>
                     </Label>
-                    <Select value={partySize} onValueChange={setPartySize}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Number of guests" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PARTY_SIZES.map((size) => (
-                          <SelectItem key={size} value={size}>
-                            {size} {size === '1' ? 'Guest' : 'Guests'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="partySize"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Number of guests" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {PARTY_SIZES.map((size) => (
+                              <SelectItem key={size} value={size}>
+                                {size} {size === '1' ? 'Guest' : 'Guests'}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.partySize && (
+                      <p className="text-xs text-destructive">{errors.partySize.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               <Separator />
 
-              {/* Special Requests */}
+              {/* Notes */}
               <div className="flex flex-col gap-4">
                 <H3 className="text-base text-muted-foreground font-medium">Special Requests</H3>
                 <div className="flex flex-col gap-2">
@@ -285,20 +294,22 @@ export function ReservationsSection() {
                   </Label>
                   <Textarea
                     id="res-notes"
-                    placeholder="Dietary requirements, special occasions, seating preferences..."
+                    placeholder="Dietary requirements, special occasions..."
                     rows={4}
-                    className="resize-none"
-                    value={notes}
                     maxLength={500}
-                    onChange={(e) => setNotes(e.target.value)}
+                    className="resize-none"
+                    {...register('notes')}
                   />
+                  {errors.notes && (
+                    <p className="text-xs text-destructive">{errors.notes.message}</p>
+                  )}
                 </div>
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-              <Button type="submit" size="lg" className="w-full sm:w-fit" disabled={loading}>
-                {loading ? 'Submitting...' : 'Confirm Reservation'}
+              <Button type="submit" size="lg" className="w-full sm:w-fit" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Confirm Reservation'}
               </Button>
             </form>
           )}
@@ -310,7 +321,6 @@ export function ReservationsSection() {
             <SectionLabel>Good to Know</SectionLabel>
             <H2 className="mt-1 text-2xl">Before you book.</H2>
           </div>
-
           <StaggerChildren className="flex flex-col gap-4">
             {INFO_CARDS.map((card) => (
               <StaggerItem key={card.title}>
@@ -332,17 +342,14 @@ export function ReservationsSection() {
               </StaggerItem>
             ))}
           </StaggerChildren>
-
           <Separator />
-
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium">Prefer to call?</p>
             <Muted className="text-xs">
-              Reach us directly at{' '}
+              Reach us at{' '}
               <a href="tel:+923210123456" className="text-primary hover:underline font-medium">
                 +92 321 0123456
-              </a>{' '}
-              and we&apos;ll take care of everything.
+              </a>
             </Muted>
           </div>
         </FadeIn>

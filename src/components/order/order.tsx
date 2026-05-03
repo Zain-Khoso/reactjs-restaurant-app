@@ -16,6 +16,9 @@ import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { useCartStore } from '@/store/cart';
 import { createCheckoutSession } from '@/actions/stripe';
 import { formatCurrency } from '@/utils/format';
+import { useForm } from 'react-hook-form';
+import { CheckoutInput, checkoutSchema } from '@/utils/validations';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   const router = useRouter();
@@ -24,42 +27,32 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   const total = subtotal + deliveryFee;
 
   const [coupon, setCoupon] = React.useState('');
-  const [deliveryName, setDeliveryName] = React.useState('');
-  const [deliveryPhone, setDeliveryPhone] = React.useState('');
-  const [deliveryAddress, setDeliveryAddress] = React.useState('');
-  const [deliveryNotes, setDeliveryNotes] = React.useState('');
   const [mounted, setMounted] = React.useState(false);
 
-  const [checkoutLoading, setCheckoutLoading] = React.useState(false);
-  const [checkoutError, setCheckoutError] = React.useState('');
-
   React.useEffect(() => setMounted(true), []);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CheckoutInput>({
+    resolver: zodResolver(checkoutSchema),
+  });
 
-  // Replace handleCheckout
-  const handleCheckout = async () => {
-    if (!deliveryAddress || !deliveryPhone) {
-      setCheckoutError('Please fill in your phone and delivery address.');
-      return;
-    }
-    setCheckoutError('');
-    setCheckoutLoading(true);
-
+  const handleCheckout = handleSubmit(async (data) => {
     try {
       const result = await createCheckoutSession({
         items,
-        address: deliveryAddress,
-        phone: deliveryPhone,
-        notes: deliveryNotes,
+        address: data.deliveryAddress,
+        phone: data.deliveryPhone,
+        notes: data.deliveryNotes,
       });
-
       if (result.url) {
         window.location.href = result.url;
       }
     } catch {
-      setCheckoutError('Something went wrong. Please try again.');
-      setCheckoutLoading(false);
+      // handle error
     }
-  };
+  });
 
   if (!mounted || items.length === 0) {
     return (
@@ -175,30 +168,36 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                     <Input
                       id="delivery-name"
                       placeholder="John Doe"
-                      value={deliveryName}
                       maxLength={50}
-                      onChange={(e) => setDeliveryName(e.target.value)}
+                      {...register('deliveryName')}
                     />
+                    {errors.deliveryName && (
+                      <p className="text-xs text-destructive">{errors.deliveryName.message}</p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="delivery-phone">Phone</Label>
                     <Input
                       id="delivery-phone"
                       placeholder="+92 300 0000000"
-                      value={deliveryPhone}
                       maxLength={20}
-                      onChange={(e) => setDeliveryPhone(e.target.value)}
+                      {...register('deliveryPhone')}
                     />
+                    {errors.deliveryPhone && (
+                      <p className="text-xs text-destructive">{errors.deliveryPhone.message}</p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <Label htmlFor="delivery-address">Delivery Address</Label>
                     <Input
                       id="delivery-address"
                       placeholder="123 Street, City"
-                      value={deliveryAddress}
                       maxLength={200}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      {...register('deliveryAddress')}
                     />
+                    {errors.deliveryAddress && (
+                      <p className="text-xs text-destructive">{errors.deliveryAddress.message}</p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <Label htmlFor="delivery-notes">
@@ -206,12 +205,10 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                     </Label>
                     <Textarea
                       id="delivery-notes"
-                      placeholder="Any special instructions..."
-                      rows={3}
-                      className="resize-none"
-                      value={deliveryNotes}
                       maxLength={500}
-                      onChange={(e) => setDeliveryNotes(e.target.value)}
+                      className="resize-none"
+                      rows={3}
+                      {...register('deliveryNotes')}
                     />
                   </div>
                 </div>
@@ -260,15 +257,15 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
               </div>
 
               {/* Update button and add error display in the summary card: */}
-              {checkoutError && <p className="text-xs text-destructive">{checkoutError}</p>}
+              {errors.root && <p className="text-xs text-destructive">{errors.root.message}</p>}
 
               <Button
                 size="lg"
                 className="w-full mt-2"
                 onClick={handleCheckout}
-                disabled={checkoutLoading || items.length === 0}
+                disabled={isSubmitting || items.length === 0}
               >
-                {checkoutLoading ? 'Redirecting to Stripe...' : 'Pay with Stripe'}
+                {isSubmitting ? 'Redirecting to Stripe...' : 'Pay with Stripe'}
               </Button>
 
               <Muted className="text-xs text-center">

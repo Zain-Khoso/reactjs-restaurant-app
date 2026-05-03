@@ -4,60 +4,56 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { signIn } from '@/utils/auth-client';
-// Shadcn
+import { signInSchema, type SignInInput } from '@/utils/validations';
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { Label } from '@/components/shadcn/label';
 import { Separator } from '@/components/shadcn/separator';
-// Animations
 import { FadeIn } from '@/components/animations';
-// Typography
 import { H2, Muted } from '@/components/shadcn/typography';
 
 export function SignInForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+  const [serverError, setServerError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
+  });
 
+  const onSubmit = async (data: SignInInput) => {
+    setServerError('');
     const { error } = await signIn.email({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       callbackURL: '/',
     });
-
     if (error) {
-      setError(error.message ?? 'Something went wrong.');
-      setLoading(false);
+      setServerError(error.message ?? 'Something went wrong.');
       return;
     }
-
     router.push('/');
   };
 
   const handleGoogle = async () => {
-    await signIn.social({
-      provider: 'google',
-      callbackURL: '/',
-    });
+    await signIn.social({ provider: 'google', callbackURL: '/' });
   };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      {/* Left — Branding Panel */}
+      {/* Left Panel */}
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden px-12 gap-8">
         <Image
           src="/images/auth-bg-image.webp"
-          alt="Urban Dish ambience"
+          alt="Urban Dish"
           fill
           sizes="50vw"
           className="object-cover"
@@ -115,7 +111,7 @@ export function SignInForm() {
             <Separator className="flex-1" />
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">
                 <Mail className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
@@ -125,12 +121,11 @@ export function SignInForm() {
                 id="email"
                 type="email"
                 placeholder="john@example.com"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 maxLength={100}
-                required
+                autoComplete="email"
+                {...register('email')}
               />
+              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -148,12 +143,10 @@ export function SignInForm() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
+                  maxLength={64}
                   autoComplete="current-password"
                   className="pr-10"
-                  value={password}
-                  maxLength={64}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  {...register('password')}
                 />
                 <button
                   type="button"
@@ -163,12 +156,15 @@ export function SignInForm() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password.message}</p>
+              )}
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-            <Button type="submit" className="w-full mt-2" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+            <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 

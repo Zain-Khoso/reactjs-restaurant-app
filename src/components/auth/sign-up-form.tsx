@@ -4,76 +4,66 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { signUp, signIn } from '@/utils/auth-client';
-// Shadcn
+import { signIn, signUp } from '@/utils/auth-client';
+import { signUpSchema, type SignUpInput } from '@/utils/validations';
+import { PasswordStrength } from '@/components/shadcn/password-strength';
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { Label } from '@/components/shadcn/label';
 import { Separator } from '@/components/shadcn/separator';
-// Animations
 import { FadeIn } from '@/components/animations';
-// Typography
 import { H2, Muted } from '@/components/shadcn/typography';
-import { PasswordStrength } from '../shadcn/password-strength';
 
 export function SignUpForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [confirm, setConfirm] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+  const [serverError, setServerError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+  });
 
-    if (password !== confirm) {
-      setError('Passwords do not match.');
-      return;
-    }
+  const password = watch('password', '');
 
-    setLoading(true);
-
+  const onSubmit = async (data: SignUpInput) => {
+    setServerError('');
     const { error } = await signUp.email({
-      name,
-      email,
-      password,
+      name: data.name,
+      email: data.email,
+      password: data.password,
       callbackURL: '/',
     });
-
     if (error) {
-      // Better Auth error codes
       if (error.status === 422 || error.message?.toLowerCase().includes('email')) {
-        setError('An account with this email already exists.');
+        setServerError('An account with this email already exists.');
       } else {
-        setError(error.message ?? 'Something went wrong.');
+        setServerError(error.message ?? 'Something went wrong.');
       }
-      setLoading(false);
       return;
     }
-
     router.push('/');
   };
 
   const handleGoogle = async () => {
-    await signIn.social({
-      provider: 'google',
-      callbackURL: '/',
-    });
+    await signIn.social({ provider: 'google', callbackURL: '/' });
   };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      {/* Left — Branding Panel */}
+      {/* Left Panel */}
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden px-12 gap-8">
         <Image
           src="/images/auth-bg-image.webp"
-          alt="Urban Dish ambience"
+          alt="Urban Dish"
           fill
           sizes="50vw"
           className="object-cover"
@@ -82,7 +72,7 @@ export function SignUpForm() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex flex-col items-center gap-6 text-center">
           <Image
-            src="/brand/icon.png"
+            src="/brand.png"
             alt="Urban Dish"
             width={220}
             height={80}
@@ -132,7 +122,7 @@ export function SignUpForm() {
             <Separator className="flex-1" />
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="name">
                 <User className="inline h-3.5 w-3.5 mr-1.5 text-primary" />
@@ -142,12 +132,11 @@ export function SignUpForm() {
                 id="name"
                 type="text"
                 placeholder="John Doe"
-                autoComplete="name"
-                value={name}
                 maxLength={50}
-                onChange={(e) => setName(e.target.value)}
-                required
+                autoComplete="name"
+                {...register('name')}
               />
+              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -159,12 +148,11 @@ export function SignUpForm() {
                 id="email"
                 type="email"
                 placeholder="john@example.com"
-                autoComplete="email"
-                value={email}
                 maxLength={100}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                autoComplete="email"
+                {...register('email')}
               />
+              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -178,20 +166,22 @@ export function SignUpForm() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   maxLength={64}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  autoComplete="new-password"
                   className="pr-10"
+                  {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               <PasswordStrength password={password} />
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -204,12 +194,10 @@ export function SignUpForm() {
                   id="confirm"
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="••••••••"
+                  maxLength={64}
                   autoComplete="new-password"
                   className="pr-10"
-                  value={confirm}
-                  maxLength={64}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
+                  {...register('confirm')}
                 />
                 <button
                   type="button"
@@ -219,6 +207,9 @@ export function SignUpForm() {
                   {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.confirm && (
+                <p className="text-xs text-destructive">{errors.confirm.message}</p>
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
@@ -227,16 +218,16 @@ export function SignUpForm() {
                 Terms & Conditions
               </Link>{' '}
               and{' '}
-              <Link href="/policy" className="text-primary hover:underline">
+              <Link href="/privacy-policy" className="text-primary hover:underline">
                 Privacy Policy
               </Link>
               .
             </p>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
-            <Button type="submit" className="w-full mt-2" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
+            <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating account...' : 'Create Account'}
             </Button>
           </form>
 
