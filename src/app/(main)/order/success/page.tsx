@@ -7,6 +7,7 @@ import { CheckCircle, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/shadcn/button';
 import { H1, Lead, Muted } from '@/components/shadcn/typography';
 import { useCartStore } from '@/store/cart';
+import { DownloadReceiptButton } from '@/components/pdf/download-receipt-button';
 
 export default function OrderSuccessPage() {
   const clearCart = useCartStore((s) => s.clearCart);
@@ -59,20 +60,24 @@ function OrderInfo() {
         food.
       </Lead>
       {orderId && (
-        <button
-          onClick={handleCopy}
-          className="flex items-center justify-center gap-1.5 mx-auto mt-1 group"
-          title="Click to copy order ID"
-        >
-          <Muted className="text-xs group-hover:text-primary transition-colors">
-            Order ID: {orderId.slice(0, 8).toUpperCase()}
-          </Muted>
-          {copied ? (
-            <Check className="h-3 w-3 text-green-500" />
-          ) : (
-            <Copy className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          )}
-        </button>
+        <div className="flex flex-col items-center gap-3 mt-1">
+          <button
+            onClick={handleCopy}
+            className="flex items-center justify-center gap-1.5 mx-auto mt-1 group"
+            title="Click to copy order ID"
+          >
+            <Muted className="text-xs group-hover:text-primary transition-colors">
+              Order ID: {orderId.slice(0, 8).toUpperCase()}
+            </Muted>
+            {copied ? (
+              <Check className="h-3 w-3 text-green-500" />
+            ) : (
+              <Copy className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
+            )}
+          </button>
+
+          <DownloadReceiptButton orderId={orderId} />
+        </div>
       )}
     </div>
   );

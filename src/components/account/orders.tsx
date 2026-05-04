@@ -7,6 +7,7 @@ import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/utils/format';
+import { DownloadReceiptButton } from '../pdf/download-receipt-button';
 
 const STATUS_STYLES: Record<string, string> = {
   DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -69,6 +70,7 @@ export function AccountOrders({ orders }: { orders: any[] }) {
                 ))}
               </div>
               <div className="flex items-center justify-end gap-2 p-4 border-t border-border">
+                <DownloadReceiptButton orderId={order.id} />
                 <Button variant="outline" size="sm">
                   View Details
                 </Button>
