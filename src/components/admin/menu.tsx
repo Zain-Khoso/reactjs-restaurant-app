@@ -24,6 +24,7 @@ import { createMenuItem, updateMenuItem, deleteMenuItem } from '@/actions/admin'
 import { uploadImage } from '@/actions/upload';
 import { formatCurrency } from '@/utils/format';
 import { MenuItem, Category } from '@/prisma/client';
+import { ImageCropper } from '@/components/shadcn/image-cropper';
 
 const CATEGORIES_FILTER = ['ALL', 'starters', 'mains', 'desserts', 'drinks'];
 
@@ -49,6 +50,8 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
   const [uploading, setUploading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
+  const [cropperOpen, setCropperOpen] = React.useState(false);
+  const [rawImageSrc, setRawImageSrc] = React.useState('');
 
   const filtered = items.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
@@ -79,12 +82,23 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
     setDialogOpen(true);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImageSrc(reader.result as string);
+      setCropperOpen(true);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
     setUploading(true);
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('file', croppedBlob, 'image.webp');
     const result = await uploadImage(fd);
     if (result.url) setForm((f) => ({ ...f, image: result.url! }));
     setUploading(false);
@@ -262,7 +276,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleImageUpload}
+                  onChange={handleImageSelect}
                   disabled={uploading}
                 />
               </div>
@@ -387,6 +401,14 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
           </div>
         </DialogContent>
       </Dialog>
+
+      <ImageCropper
+        imageSrc={rawImageSrc}
+        aspectRatio={4 / 3}
+        open={cropperOpen}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+      />
 
       {/* Delete Confirm Dialog */}
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
