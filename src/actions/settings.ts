@@ -5,10 +5,14 @@ import { requireAdmin } from '@/utils/session';
 import { revalidatePath } from 'next/cache';
 
 export async function getDeliveryFee(): Promise<number> {
-  const setting = await prisma.settings.findUnique({
-    where: { key: 'delivery_fee' },
-  });
-  return setting ? parseInt(setting.value) : 150;
+  try {
+    const setting = await prisma.settings.findUnique({
+      where: { key: 'delivery_fee' },
+    });
+    return setting ? parseInt(setting.value) : 150;
+  } catch {
+    return 150;
+  }
 }
 
 export async function updateDeliveryFee(fee: number) {
