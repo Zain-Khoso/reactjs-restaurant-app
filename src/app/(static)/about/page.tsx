@@ -5,6 +5,7 @@ import { AboutHero } from '@/components/about/hero';
 import { AboutStory } from '@/components/about/story';
 import { AboutStats } from '@/components/about/stats';
 import { AboutValues } from '@/components/about/values';
+import { getChefs } from '@/actions/admin';
 import { Chefs } from '@/components/home/chefs';
 
 export const metadata: Metadata = {
@@ -12,13 +13,14 @@ export const metadata: Metadata = {
   description: 'Learn about Urban Dish — our story, our mission, and the people behind the food.',
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const chefs = await getChefs();
   return (
     <>
       <AboutHero />
       <AboutStory />
       <AboutStats />
-      <Chefs />
+      <Chefs chefs={chefs} />
       <AboutValues />
     </>
   );

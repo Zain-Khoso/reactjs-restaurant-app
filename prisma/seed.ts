@@ -264,7 +264,6 @@ async function main() {
           content: termsContent,
         },
       }),
-
     () =>
       prisma.pageContent.upsert({
         where: { key: 'policy' },
@@ -273,6 +272,86 @@ async function main() {
           key: 'policy',
           title: 'Privacy Policy',
           content: privacyContent,
+        },
+      }),
+    () =>
+      prisma.chef.upsert({
+        where: { id: 'chef-1' },
+        update: {},
+        create: {
+          id: 'chef-1',
+          name: 'Chef Rajeev Patel',
+          cuisine: 'Indian',
+          sortOrder: 1,
+        },
+      }),
+    () =>
+      prisma.chef.upsert({
+        where: { id: 'chef-2' },
+        update: {},
+        create: {
+          id: 'chef-2',
+          name: 'Chef Maria Hernandez',
+          cuisine: 'Mexican',
+          sortOrder: 2,
+        },
+      }),
+    () =>
+      prisma.chef.upsert({
+        where: { id: 'chef-3' },
+        update: {},
+        create: {
+          id: 'chef-3',
+          name: 'Chef Marco Rossi',
+          cuisine: 'Italian',
+          sortOrder: 3,
+        },
+      }),
+    () =>
+      prisma.chef.upsert({
+        where: { id: 'chef-4' },
+        update: {},
+        create: {
+          id: 'chef-4',
+          name: 'Chef Li Wei',
+          cuisine: 'Chinese',
+          sortOrder: 4,
+        },
+      }),
+    () =>
+      prisma.testimonial.upsert({
+        where: { id: 'testimonial-1' },
+        update: {},
+        create: {
+          id: 'testimonial-1',
+          name: 'Carlos Hernandez',
+          location: 'Spain',
+          comment: 'The paella is amazing! So flavorful and filling.',
+          sortOrder: 1,
+        },
+      }),
+    () =>
+      prisma.testimonial.upsert({
+        where: { id: 'testimonial-2' },
+        update: {},
+        create: {
+          id: 'testimonial-2',
+          name: 'Maria Hernandez',
+          location: 'Mexico',
+          comment: 'The food here is absolutely amazing! The flavors are bold and authentic.',
+          sortOrder: 2,
+        },
+      }),
+    () =>
+      prisma.testimonial.upsert({
+        where: { id: 'testimonial-3' },
+        update: {},
+        create: {
+          id: 'testimonial-3',
+          name: 'Marco Rossi',
+          location: 'Italy',
+          comment: 'This restaurant is a hidden gem. The pasta dishes are to die for.',
+          sortOrder: 3,
         },
       }),
   ];

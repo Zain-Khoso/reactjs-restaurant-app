@@ -77,3 +77,13 @@ export type Settings = Prisma.SettingsModel
  * 
  */
 export type PageContent = Prisma.PageContentModel
+/**
+ * Model Chef
+ * 
+ */
+export type Chef = Prisma.ChefModel
+/**
+ * Model Testimonial
+ * 
+ */
+export type Testimonial = Prisma.TestimonialModel

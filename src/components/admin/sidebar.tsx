@@ -3,23 +3,26 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/shadcn/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/shadcn/sheet';
+import { cn } from '@/utils/index';
+
 import {
   LayoutDashboard,
   UtensilsCrossed,
   ShoppingBag,
   CalendarCheck,
-  Menu,
   FileText,
+  Home,
+  Menu,
 } from 'lucide-react';
-import { Button } from '@/components/shadcn/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/shadcn/sheet';
-import { cn } from '@/utils/index';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Menu', href: '/admin/menu', icon: UtensilsCrossed },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Reservations', href: '/admin/reservations', icon: CalendarCheck },
+  { label: 'Home Content', href: '/admin/home', icon: Home },
   { label: 'Pages', href: '/admin/pages', icon: FileText },
 ];
 

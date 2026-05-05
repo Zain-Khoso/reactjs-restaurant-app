@@ -226,3 +226,154 @@ export async function updatePageContent(key: string, data: { title: string; cont
   revalidatePath('/admin/pages');
   return { success: true };
 }
+
+// ── Chefs ─────────────────────────────────────────────────────
+
+export async function getChefs() {
+  return prisma.chef.findMany({
+    where: { active: true },
+    orderBy: { sortOrder: 'asc' },
+  });
+}
+
+export async function getAllChefs() {
+  await requireAdmin();
+  return prisma.chef.findMany({ orderBy: { sortOrder: 'asc' } });
+}
+
+export async function createChef(data: {
+  name: string;
+  cuisine: string;
+  image?: string;
+  sortOrder?: number;
+}) {
+  await requireAdmin();
+  await prisma.chef.create({
+    data: {
+      name: sanitizeInput(data.name),
+      cuisine: sanitizeInput(data.cuisine),
+      image: data.image ?? null,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  revalidatePath('/about');
+  return { success: true };
+}
+
+export async function updateChef(
+  id: string,
+  data: {
+    name?: string;
+    cuisine?: string;
+    image?: string;
+    sortOrder?: number;
+    active?: boolean;
+  }
+) {
+  await requireAdmin();
+  await prisma.chef.update({
+    where: { id },
+    data: {
+      ...(data.name && { name: sanitizeInput(data.name) }),
+      ...(data.cuisine && { cuisine: sanitizeInput(data.cuisine) }),
+      ...(data.image !== undefined && { image: data.image }),
+      ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
+      ...(data.active !== undefined && { active: data.active }),
+    },
+  });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  revalidatePath('/about');
+  return { success: true };
+}
+
+export async function deleteChef(id: string) {
+  await requireAdmin();
+  await prisma.chef.delete({ where: { id } });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  revalidatePath('/about');
+  return { success: true };
+}
+
+// ── Testimonials ──────────────────────────────────────────────
+
+export async function getTestimonials() {
+  return prisma.testimonial.findMany({
+    where: { active: true },
+    orderBy: { sortOrder: 'asc' },
+  });
+}
+
+export async function getAllTestimonials() {
+  await requireAdmin();
+  return prisma.testimonial.findMany({ orderBy: { sortOrder: 'asc' } });
+}
+
+export async function createTestimonial(data: {
+  name: string;
+  location: string;
+  comment: string;
+  image?: string;
+  sortOrder?: number;
+}) {
+  await requireAdmin();
+  await prisma.testimonial.create({
+    data: {
+      name: sanitizeInput(data.name),
+      location: sanitizeInput(data.location),
+      comment: sanitizeInput(data.comment),
+      image: data.image ?? null,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  return { success: true };
+}
+
+export async function updateTestimonial(
+  id: string,
+  data: {
+    name?: string;
+    location?: string;
+    comment?: string;
+    image?: string;
+    sortOrder?: number;
+    active?: boolean;
+  }
+) {
+  await requireAdmin();
+  await prisma.testimonial.update({
+    where: { id },
+    data: {
+      ...(data.name && { name: sanitizeInput(data.name) }),
+      ...(data.location && { location: sanitizeInput(data.location) }),
+      ...(data.comment && { comment: sanitizeInput(data.comment) }),
+      ...(data.image !== undefined && { image: data.image }),
+      ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
+      ...(data.active !== undefined && { active: data.active }),
+    },
+  });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  return { success: true };
+}
+
+export async function deleteTestimonial(id: string) {
+  await requireAdmin();
+  await prisma.testimonial.delete({ where: { id } });
+  revalidatePath('/admin/home');
+  revalidatePath('/');
+  return { success: true };
+}
+
+export async function getFeaturedItems() {
+  return prisma.menuItem.findMany({
+    where: { available: true },
+    select: { id: true, name: true, image: true, featured: true },
+    orderBy: { name: 'asc' },
+  });
+}
