@@ -28,6 +28,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
 
   const [coupon, setCoupon] = React.useState('');
   const [mounted, setMounted] = React.useState(false);
+  const [checkoutError, setCheckoutError] = React.useState('');
 
   React.useEffect(() => setMounted(true), []);
   const {
@@ -39,6 +40,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   });
 
   const handleCheckout = handleSubmit(async (data) => {
+    setCheckoutError('');
     try {
       const result = await createCheckoutSession({
         items,
@@ -46,11 +48,14 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
         phone: data.deliveryPhone,
         notes: data.deliveryNotes,
       });
+
       if (result.url) {
         window.location.href = result.url;
+      } else if (result.error) {
+        setCheckoutError(result.error);
       }
     } catch {
-      // handle error
+      setCheckoutError('Something went wrong. Please try again.');
     }
   });
 
@@ -222,7 +227,6 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
           <Card className="border border-border shadow-sm sticky top-24">
             <CardContent className="flex flex-col gap-4 p-6">
               <H3 className="text-base">Order Summary</H3>
-
               <div className="flex flex-col gap-2">
                 {items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between">
@@ -235,9 +239,7 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                   </div>
                 ))}
               </div>
-
               <Separator />
-
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <Muted className="text-sm">Subtotal</Muted>
@@ -248,17 +250,13 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
                   <Muted className="text-sm">{formatCurrency(deliveryFee)}</Muted>
                 </div>
               </div>
-
               <Separator />
-
               <div className="flex items-center justify-between">
                 <p className="font-semibold">Total</p>
                 <p className="font-bold text-lg text-primary">{formatCurrency(total)}</p>
               </div>
-
               {/* Update button and add error display in the summary card: */}
               {errors.root && <p className="text-xs text-destructive">{errors.root.message}</p>}
-
               <Button
                 size="lg"
                 className="w-full mt-2"
@@ -267,11 +265,14 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
               >
                 {isSubmitting ? 'Redirecting to Stripe...' : 'Pay with Stripe'}
               </Button>
-
               <Muted className="text-xs text-center">
                 Secured by <span className="font-medium text-foreground">Stripe</span>. Your payment
                 info is never stored.
               </Muted>
+
+              {checkoutError && (
+                <p className="text-sm text-destructive text-center">{checkoutError}</p>
+              )}
             </CardContent>
           </Card>
         </FadeIn>
