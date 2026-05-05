@@ -18,9 +18,9 @@ export async function getUserOrders() {
 
 export async function getUserReservations() {
   const user = await requireUser();
-
   return prisma.reservation.findMany({
     where: { userId: user.id },
+    include: { table: true },
     orderBy: { createdAt: 'desc' },
   });
 }

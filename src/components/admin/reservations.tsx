@@ -15,7 +15,12 @@ import {
 } from '@/components/shadcn/select';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
-import { updateReservationStatus } from '@/actions/admin';
+import {
+  updateReservationStatus,
+  getAvailableTables,
+  assignTableToReservation,
+} from '@/actions/admin';
+import { useRouter } from 'next/navigation';
 
 const STATUS_STYLES: Record<string, string> = {
   CONFIRMED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -26,8 +31,32 @@ const STATUS_STYLES: Record<string, string> = {
 const STATUSES = ['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'];
 
 export function AdminReservations({ reservations }: { reservations: any[] }) {
+  const router = useRouter();
   const [search, setSearch] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('ALL');
+  const [tableSelections, setTableSelections] = React.useState<Record<string, string>>({});
+  const [availableTables, setAvailableTables] = React.useState<
+    Record<string, { id: string; number: number; capacity: number }[]>
+  >({});
+  const [loadingTables, setLoadingTables] = React.useState<string | null>(null);
+
+  const loadTablesForReservation = async (res: any) => {
+    if (availableTables[res.id]) return; // already loaded
+    setLoadingTables(res.id);
+    const tables = await getAvailableTables(new Date(res.date), res.time);
+    setAvailableTables((prev) => ({ ...prev, [res.id]: tables }));
+    setLoadingTables(null);
+  };
+
+  const handleConfirm = async (res: any) => {
+    const tableId = tableSelections[res.id];
+    if (!tableId) {
+      await updateReservationStatus(res.id, 'CONFIRMED');
+    } else {
+      await assignTableToReservation(res.id, tableId);
+    }
+    router.refresh();
+  };
 
   const filtered = reservations.filter((res) => {
     const matchesSearch =
@@ -37,10 +66,6 @@ export function AdminReservations({ reservations }: { reservations: any[] }) {
     const matchesStatus = statusFilter === 'ALL' || res.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-
-  const handleConfirm = async (id: string) => {
-    await updateReservationStatus(id, 'CONFIRMED');
-  };
 
   const handleCancel = async (id: string) => {
     await updateReservationStatus(id, 'CANCELLED');
@@ -94,6 +119,13 @@ export function AdminReservations({ reservations }: { reservations: any[] }) {
                         {res.email} · {res.phone}
                       </Muted>
                     </div>
+                    {res.table && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                          Table {res.table.number}
+                        </span>
+                      </div>
+                    )}
                     <span
                       className={`text-xs font-medium px-2.5 py-1 rounded-full w-fit ${STATUS_STYLES[res.status]}`}
                     >
@@ -119,13 +151,47 @@ export function AdminReservations({ reservations }: { reservations: any[] }) {
                   {res.notes && <Muted className="text-xs italic">&quot;{res.notes}&quot;</Muted>}
 
                   {res.status === 'PENDING' && (
-                    <div className="flex items-center gap-2 pt-1">
-                      <Button size="sm" onClick={() => handleConfirm(res.id)}>
-                        Confirm
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleCancel(res.id)}>
-                        Cancel
-                      </Button>
+                    <div className="flex flex-col gap-3 pt-1">
+                      {/* Table selector */}
+                      <div className="flex items-center gap-2">
+                        <Select
+                          onValueChange={(val) =>
+                            setTableSelections((prev) => ({ ...prev, [res.id]: val }))
+                          }
+                          onOpenChange={(open) => {
+                            if (open) loadTablesForReservation(res);
+                          }}
+                        >
+                          <SelectTrigger className="h-8 text-xs flex-1">
+                            <SelectValue
+                              placeholder={
+                                loadingTables === res.id
+                                  ? 'Loading tables...'
+                                  : 'Assign a table (optional)'
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(availableTables[res.id] ?? []).map((table) => (
+                              <SelectItem key={table.id} value={table.id} className="text-xs">
+                                Table {table.number} — seats {table.capacity}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" onClick={() => handleConfirm(res)}>
+                          Confirm
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleCancel(res.id)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </CardContent>

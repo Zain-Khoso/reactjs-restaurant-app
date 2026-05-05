@@ -87,3 +87,8 @@ export type Chef = Prisma.ChefModel
  * 
  */
 export type Testimonial = Prisma.TestimonialModel
+/**
+ * Model Table
+ * 
+ */
+export type Table = Prisma.TableModel

@@ -397,7 +397,8 @@ export const ModelName = {
   Settings: 'Settings',
   PageContent: 'PageContent',
   Chef: 'Chef',
-  Testimonial: 'Testimonial'
+  Testimonial: 'Testimonial',
+  Table: 'Table'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verification" | "category" | "menuItem" | "order" | "orderItem" | "reservation" | "review" | "settings" | "pageContent" | "chef" | "testimonial"
+    modelProps: "user" | "account" | "session" | "verification" | "category" | "menuItem" | "order" | "orderItem" | "reservation" | "review" | "settings" | "pageContent" | "chef" | "testimonial" | "table"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1453,6 +1454,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Table: {
+      payload: Prisma.$TablePayload<ExtArgs>
+      fields: Prisma.TableFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TableFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TableFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        findFirst: {
+          args: Prisma.TableFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TableFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        findMany: {
+          args: Prisma.TableFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>[]
+        }
+        create: {
+          args: Prisma.TableCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        createMany: {
+          args: Prisma.TableCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TableCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>[]
+        }
+        delete: {
+          args: Prisma.TableDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        update: {
+          args: Prisma.TableUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        deleteMany: {
+          args: Prisma.TableDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TableUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TableUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>[]
+        }
+        upsert: {
+          args: Prisma.TableUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TablePayload>
+        }
+        aggregate: {
+          args: Prisma.TableAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTable>
+        }
+        groupBy: {
+          args: Prisma.TableGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TableGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TableCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TableCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1616,6 +1691,7 @@ export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof t
 export const ReservationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  tableId: 'tableId',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -1692,6 +1768,16 @@ export const TestimonialScalarFieldEnum = {
 } as const
 
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
+
+
+export const TableScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  capacity: 'capacity',
+  active: 'active'
+} as const
+
+export type TableScalarFieldEnum = (typeof TableScalarFieldEnum)[keyof typeof TableScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1952,6 +2038,7 @@ export type GlobalOmitConfig = {
   pageContent?: Prisma.PageContentOmit
   chef?: Prisma.ChefOmit
   testimonial?: Prisma.TestimonialOmit
+  table?: Prisma.TableOmit
 }
 
 /* Types for Logging */

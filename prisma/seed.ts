@@ -354,6 +354,19 @@ async function main() {
           sortOrder: 3,
         },
       }),
+    () =>
+      Promise.all(
+        Array.from({ length: 10 }, (_, i) =>
+          prisma.table.upsert({
+            where: { number: i + 1 },
+            update: {},
+            create: {
+              number: i + 1,
+              capacity: i < 4 ? 2 : i < 8 ? 4 : 8,
+            },
+          })
+        )
+      ),
   ];
 
   for (const query of queries) {

@@ -57,6 +57,13 @@ export function AccountReservations({ reservations }: { reservations: any[] }) {
                 >
                   {res.status}
                 </span>
+                {res.table && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      Table {res.table.number}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-4">

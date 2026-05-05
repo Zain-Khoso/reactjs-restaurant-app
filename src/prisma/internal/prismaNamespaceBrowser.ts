@@ -64,7 +64,8 @@ export const ModelName = {
   Settings: 'Settings',
   PageContent: 'PageContent',
   Chef: 'Chef',
-  Testimonial: 'Testimonial'
+  Testimonial: 'Testimonial',
+  Table: 'Table'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -207,6 +208,7 @@ export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof t
 export const ReservationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  tableId: 'tableId',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -283,6 +285,16 @@ export const TestimonialScalarFieldEnum = {
 } as const
 
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
+
+
+export const TableScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  capacity: 'capacity',
+  active: 'active'
+} as const
+
+export type TableScalarFieldEnum = (typeof TableScalarFieldEnum)[keyof typeof TableScalarFieldEnum]
 
 
 export const SortOrder = {

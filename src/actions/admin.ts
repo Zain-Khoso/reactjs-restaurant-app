@@ -176,7 +176,7 @@ export async function updateOrderStatus(id: string, status: string) {
 export async function getAdminReservations() {
   await requireAdmin();
   return prisma.reservation.findMany({
-    include: { user: true },
+    include: { user: true, table: true },
     orderBy: { date: 'desc' },
   });
 }
@@ -376,4 +376,76 @@ export async function getFeaturedItems() {
     select: { id: true, name: true, image: true, featured: true },
     orderBy: { name: 'asc' },
   });
+}
+
+export async function getTables() {
+  await requireAdmin();
+  return prisma.table.findMany({
+    orderBy: { number: 'asc' },
+  });
+}
+
+export async function getAvailableTables(date: Date, time: string) {
+  await requireAdmin();
+
+  // Get all tables
+  const allTables = await prisma.table.findMany({
+    where: { active: true },
+    orderBy: { number: 'asc' },
+  });
+
+  // Get tables already reserved at this date+time
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const takenTableIds = await prisma.reservation.findMany({
+    where: {
+      date: { gte: startOfDay, lte: endOfDay },
+      time,
+      status: { not: 'CANCELLED' },
+      tableId: { not: null },
+    },
+    select: { tableId: true },
+  });
+
+  const takenIds = new Set(takenTableIds.map((r) => r.tableId));
+
+  return allTables.filter((t) => !takenIds.has(t.id));
+}
+
+export async function assignTableToReservation(reservationId: string, tableId: string) {
+  await requireAdmin();
+
+  const reservation = await prisma.reservation.findUnique({
+    where: { id: reservationId },
+  });
+
+  if (!reservation) {
+    return { success: false, error: 'Reservation not found.' };
+  }
+
+  // Check table availability
+  const available = await getAvailableTables(reservation.date, reservation.time);
+  const isAvailable = available.some((t) => t.id === tableId);
+
+  if (!isAvailable) {
+    return {
+      success: false,
+      error: 'This table is already reserved at that date and time.',
+    };
+  }
+
+  await prisma.reservation.update({
+    where: { id: reservationId },
+    data: {
+      tableId,
+      status: 'CONFIRMED',
+    },
+  });
+
+  revalidatePath('/admin/reservations');
+  revalidatePath('/account');
+  return { success: true };
 }
