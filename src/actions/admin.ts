@@ -231,10 +231,14 @@ export async function updatePageContent(key: string, data: { title: string; cont
 // ── Chefs ─────────────────────────────────────────────────────
 
 export async function getChefs() {
-  return prisma.chef.findMany({
-    where: { active: true },
-    orderBy: { sortOrder: 'asc' },
-  });
+  try {
+    return prisma.chef.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getAllChefs() {
@@ -302,10 +306,14 @@ export async function deleteChef(id: string) {
 // ── Testimonials ──────────────────────────────────────────────
 
 export async function getTestimonials() {
-  return prisma.testimonial.findMany({
-    where: { active: true },
-    orderBy: { sortOrder: 'asc' },
-  });
+  try {
+    return prisma.testimonial.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getAllTestimonials() {

@@ -17,9 +17,13 @@ export async function getCategories() {
 }
 
 export async function getFeaturedItems() {
-  return prisma.menuItem.findMany({
-    where: { featured: true, available: true },
-    include: { category: true },
-    take: 4,
-  });
+  try {
+    return prisma.menuItem.findMany({
+      where: { featured: true, available: true },
+      include: { category: true },
+      take: 4,
+    });
+  } catch {
+    return [];
+  }
 }

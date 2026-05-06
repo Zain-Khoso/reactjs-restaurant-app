@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { betterFetch } from '@better-fetch/fetch';
-import type { Session } from '@/utils/auth';
+import { auth } from '@/utils/auth';
+
+export const runtime = 'nodejs';
 
 const PROTECTED_ROUTES = ['/account', '/order'];
 const ADMIN_ROUTES = ['/admin'];
@@ -13,18 +14,25 @@ export async function middleware(request: NextRequest) {
   const isAdmin = ADMIN_ROUTES.some((r) => pathname.startsWith(r));
   const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
 
-  // Skip middleware if route doesn't need protection
   if (!isProtected && !isAdmin && !isAuth) {
     return NextResponse.next();
   }
 
-  // Fetch session from Better Auth API — no Prisma, no Node APIs
-  const { data: session } = await betterFetch<Session>('/api/auth/get-session', {
-    baseURL: request.nextUrl.origin,
-    headers: {
-      cookie: request.headers.get('cookie') ?? '',
-    },
-  });
+  let session = null;
+
+  try {
+    session = await auth.api.getSession({
+      headers: request.headers,
+    });
+  } catch {
+    // If session fetch fails completely, allow the request through
+    // rather than incorrectly redirecting a valid user
+    if (isAuth) return NextResponse.next();
+    if (isProtected || isAdmin) {
+      return NextResponse.redirect(new URL('/sign-in', request.url));
+    }
+    return NextResponse.next();
+  }
 
   const isAuthenticated = !!session?.user;
   const isAdminUser = session?.user?.role === 'ADMIN';
