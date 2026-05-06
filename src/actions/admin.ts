@@ -20,21 +20,22 @@ export async function getDashboardStats() {
     recentOrders,
     monthlyRevenue,
   ] = await Promise.all([
-    prisma.reservation.count({
-      where: { status: { not: 'CANCELLED' } },
-    }),
+    prisma.order.count(),
     prisma.order.aggregate({
       _sum: { total: true },
       where: { status: { not: 'CANCELLED' } },
     }),
-    prisma.reservation.count(),
-    prisma.user.count({ where: { role: 'CUSTOMER' } }),
+    prisma.reservation.count({
+      where: { status: { not: 'CANCELLED' } },
+    }),
+    prisma.user.count({
+      where: { role: 'CUSTOMER' }, // ← string literal, not enum reference
+    }),
     prisma.order.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { user: true },
     }),
-    // Last 6 months revenue
     prisma.$queryRaw<{ month: string; revenue: number }[]>`
       SELECT
         TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
