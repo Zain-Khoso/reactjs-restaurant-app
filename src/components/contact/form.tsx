@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { Separator } from '@/components/shadcn/separator';
 import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { H2, H3, Muted, SectionLabel } from '@/components/shadcn/typography';
+import { useUserStore } from '@/store/user';
 
 const CONTACT_INFO = [
   { icon: MapPin, label: 'Address', value: '123 Street, Sukkur, Pakistan' },
@@ -30,14 +31,24 @@ export function ContactSection() {
   const [success, setSuccess] = React.useState(false);
   const [serverError, setServerError] = React.useState('');
 
+  const user = useUserStore((s) => s.user);
+
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setValue('name', user.name ?? '');
+      setValue('email', user.email ?? '');
+    }
+  }, [user, setValue]);
 
   const onSubmit = async (data: ContactInput) => {
     setServerError('');

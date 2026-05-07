@@ -19,12 +19,14 @@ import { formatCurrency } from '@/utils/format';
 import { useForm } from 'react-hook-form';
 import { CheckoutInput, checkoutSchema } from '@/utils/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUserStore } from '@/store/user';
 
 export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   const router = useRouter();
   const { items, updateQuantity, removeItem } = useCartStore();
   const subtotal = useCartStore((s) => s.subtotal());
   const total = subtotal + deliveryFee;
+  const user = useUserStore((s) => s.user);
 
   const [coupon, setCoupon] = React.useState('');
   const [mounted, setMounted] = React.useState(false);
@@ -34,10 +36,18 @@ export function OrderSection({ deliveryFee }: { deliveryFee: number }) {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutInput>({
     resolver: zodResolver(checkoutSchema),
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setValue('deliveryName', user.name ?? '');
+      setValue('deliveryPhone', user.phone ?? '');
+    }
+  }, [user, setValue]);
 
   const handleCheckout = handleSubmit(async (data) => {
     setCheckoutError('');
