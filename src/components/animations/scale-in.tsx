@@ -16,7 +16,7 @@ export function ScaleIn({ children, className, delay = 0 }: ScaleInProps) {
       className={className}
       initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: '-80px' }}
+      viewport={{ once: false, margin: '-80px' }}
       transition={{
         duration: 0.5,
         delay: shouldReduceMotion ? 0 : delay,

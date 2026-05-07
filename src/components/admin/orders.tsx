@@ -79,7 +79,7 @@ export function AdminOrders({ orders }: { orders: any[] }) {
       {filtered.length === 0 ? (
         <Muted className="text-sm text-center py-10">No orders found.</Muted>
       ) : (
-        <StaggerChildren className="flex flex-col gap-3">
+        <StaggerChildren key={`${statusFilter}-${search}`} className="flex flex-col gap-3">
           {filtered.map((order) => (
             <StaggerItem key={order.id}>
               <Card className="border border-border shadow-sm">

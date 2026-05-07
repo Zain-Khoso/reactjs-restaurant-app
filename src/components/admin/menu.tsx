@@ -198,7 +198,10 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
       </FadeIn>
 
       {/* Grid */}
-      <StaggerChildren className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StaggerChildren
+        key={`${categoryFilter}-${search}`}
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      >
         {filtered.map((item) => (
           <StaggerItem key={item.id}>
             <Card className="border border-border shadow-sm overflow-hidden group">

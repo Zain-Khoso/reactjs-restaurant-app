@@ -105,7 +105,7 @@ export function AdminReservations({ reservations }: { reservations: any[] }) {
       {filtered.length === 0 ? (
         <Muted className="text-sm text-center py-10">No reservations found.</Muted>
       ) : (
-        <StaggerChildren className="flex flex-col gap-3">
+        <StaggerChildren key={`${statusFilter}-${search}`} className="flex flex-col gap-3">
           {filtered.map((res) => (
             <StaggerItem key={res.id}>
               <Card className="border border-border shadow-sm">

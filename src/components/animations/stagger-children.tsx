@@ -16,7 +16,7 @@ export function StaggerChildren({ children, className, staggerDelay = 0.1 }: Sta
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-80px' }}
+      viewport={{ once: false, margin: '-80px' }} // ← once: false
       variants={{
         visible: {
           transition: {
