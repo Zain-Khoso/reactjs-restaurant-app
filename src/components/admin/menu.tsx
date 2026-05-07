@@ -25,6 +25,7 @@ import { uploadImage } from '@/actions/upload';
 import { formatCurrency } from '@/utils/format';
 import { MenuItem, Category } from '@/prisma/client';
 import { ImageCropper } from '@/components/shadcn/image-cropper';
+import { useRouter } from 'next/navigation';
 
 const CATEGORIES_FILTER = ['ALL', 'starters', 'mains', 'desserts', 'drinks'];
 
@@ -52,10 +53,17 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
   const [cropperOpen, setCropperOpen] = React.useState(false);
   const [rawImageSrc, setRawImageSrc] = React.useState('');
+  const [localItems, setLocalItems] = React.useState(items);
+  const router = useRouter();
 
-  const filtered = items.filter((item) => {
+  // Keep in sync if props change
+  React.useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
+
+  const filtered = localItems.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = categoryFilter === 'ALL' || item.categoryId === categoryFilter;
+    const matchesCategory = categoryFilter === 'ALL' || item.category.slug === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -106,7 +114,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
 
   const handleSave = async () => {
     setSaving(true);
-    const data: any = {
+    const data = {
       name: form.name,
       slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
       description: form.description,
@@ -116,19 +124,29 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean),
-      featured: form.featured,
-      available: form.available,
-      image: form.image || null,
       ingredients: form.ingredients
         .split(',')
         .map((i) => i.trim())
         .filter(Boolean),
+      featured: form.featured,
+      available: form.available,
+      image: form.image || undefined,
     };
+
+    const selectedCategory = categories.find((c) => c.id === data.categoryId)!;
 
     if (editingItem) {
       await updateMenuItem(editingItem.id, data);
+      // Update locally
+      setLocalItems((prev) =>
+        prev.map((item) =>
+          item.id === editingItem.id ? { ...item, ...data, category: selectedCategory } : item
+        )
+      );
     } else {
-      await createMenuItem(data);
+      const result = await createMenuItem(data);
+      // For new items we still need router.refresh() to get the real ID from DB
+      router.refresh();
     }
 
     setSaving(false);
@@ -137,6 +155,7 @@ export function AdminMenu({ items, categories }: { items: MenuItem[]; categories
 
   const handleDelete = async (id: string) => {
     await deleteMenuItem(id);
+    setLocalItems((prev) => prev.filter((item) => item.id !== id));
     setDeleteConfirm(null);
   };
 
