@@ -15,6 +15,7 @@ import {
   FileText,
   Home,
   Menu,
+  Settings,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { label: 'Reservations', href: '/admin/reservations', icon: CalendarCheck },
   { label: 'Home Content', href: '/admin/home', icon: Home },
   { label: 'Pages', href: '/admin/pages', icon: FileText },
+  { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
