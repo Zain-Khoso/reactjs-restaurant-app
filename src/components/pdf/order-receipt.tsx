@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Order } from '@/prisma/client';
 
 const styles = StyleSheet.create({
   page: {
@@ -177,27 +178,6 @@ const styles = StyleSheet.create({
     color: '#c0392b',
   },
 });
-
-type OrderItem = {
-  id: string;
-  quantity: number;
-  unitPrice: number;
-  menuItem: { name: string };
-};
-
-type Order = {
-  id: string;
-  createdAt: Date | string;
-  status: string;
-  subtotal: number;
-  deliveryFee: number;
-  total: number;
-  address: string | null;
-  phone: string | null;
-  notes: string | null;
-  items: OrderItem[];
-  user?: { name: string; email: string } | null;
-};
 
 function formatPKR(amount: number): string {
   return `Rs ${amount.toLocaleString('en-PK')}`;

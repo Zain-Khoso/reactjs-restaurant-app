@@ -27,32 +27,7 @@ import {
   deleteTestimonial,
   updateMenuItem,
 } from '@/actions/admin';
-
-type Chef = {
-  id: string;
-  name: string;
-  cuisine: string;
-  image: string | null;
-  sortOrder: number;
-  active: boolean;
-};
-
-type Testimonial = {
-  id: string;
-  name: string;
-  location: string;
-  comment: string;
-  image: string | null;
-  sortOrder: number;
-  active: boolean;
-};
-
-type MenuItem = {
-  id: string;
-  name: string;
-  image: string | null;
-  featured: boolean;
-};
+import { Chef, Testimonial, MenuItem } from '@/prisma/client';
 
 const DEFAULT_CHEF = { name: '', cuisine: '', image: '', sortOrder: 0 };
 const DEFAULT_TESTIMONIAL = {

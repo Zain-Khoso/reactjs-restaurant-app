@@ -13,13 +13,7 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { FadeIn } from '@/components/animations';
 
-type Testimonial = {
-  id: string;
-  name: string;
-  location: string;
-  comment: string;
-  image: string | null;
-};
+import { Testimonial } from '@/prisma/client';
 
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
   return (

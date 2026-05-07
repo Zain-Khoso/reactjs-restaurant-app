@@ -8,23 +8,7 @@ import { FadeIn, StaggerChildren, StaggerItem } from '@/components/animations';
 import { MenuCard } from '@/components/menu/card';
 import { Muted } from '@/components/shadcn/typography';
 
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-};
-
-type MenuItem = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  image: string | null;
-  category: Category;
-  tags: string[];
-  featured: boolean;
-};
+import { Category, MenuItem } from '@/prisma/client';
 
 interface MenuSectionProps {
   items: MenuItem[];

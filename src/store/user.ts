@@ -1,13 +1,5 @@
 import { create } from 'zustand';
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  image?: string | null;
-  role: string;
-  phone?: string | null;
-};
+import { User } from '@/utils/auth';
 
 type UserStore = {
   user: User | null;

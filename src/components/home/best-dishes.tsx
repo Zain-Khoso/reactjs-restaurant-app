@@ -12,15 +12,7 @@ import { ShoppingCart, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/utils/format';
 
-type MenuItem = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string | null;
-  tags: string[];
-  featured: boolean;
-};
+import { MenuItem } from '@/prisma/client';
 
 export function BestDishes({ dishes }: { dishes: MenuItem[] }) {
   const addItem = useCartStore((s) => s.addItem);

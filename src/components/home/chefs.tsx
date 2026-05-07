@@ -5,36 +5,7 @@ import { Card, CardContent } from '@/components/shadcn/card';
 // Typography
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { StaggerChildren, StaggerItem, FadeIn } from '../animations';
-
-type Chef = {
-  id: string;
-  name: string;
-  cuisine: string;
-  image: string | null;
-};
-
-const CHEFS = [
-  {
-    name: 'Chef Rajeev Patel',
-    cuisine: 'Indian',
-    image: '/images/gallery/chefs/1.webp',
-  },
-  {
-    name: 'Chef Maria Hernandez',
-    cuisine: 'Mexican',
-    image: '/images/gallery/chefs/2.webp',
-  },
-  {
-    name: 'Chef Marco Rossi',
-    cuisine: 'Italian',
-    image: '/images/gallery/chefs/3.webp',
-  },
-  {
-    name: 'Chef Li Wei',
-    cuisine: 'Chinese',
-    image: '/images/gallery/chefs/4.webp',
-  },
-];
+import { Chef } from '@/prisma/client';
 
 export function Chefs({ chefs }: { chefs: Chef[] }) {
   return (

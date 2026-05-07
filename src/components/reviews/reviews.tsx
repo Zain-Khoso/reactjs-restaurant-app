@@ -11,17 +11,7 @@ import { H3, Muted } from '@/components/shadcn/typography';
 import { useSession } from '@/utils/auth-client';
 import { createReview, deleteReview } from '@/actions/reviews';
 
-type Review = {
-  id: string;
-  rating: number;
-  comment: string | null;
-  createdAt: Date;
-  user: {
-    id: string;
-    name: string;
-    image: string | null;
-  };
-};
+import { Review } from '@/prisma/client';
 
 function StarRating({
   value,

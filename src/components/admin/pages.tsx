@@ -14,14 +14,7 @@ import { H2, H3, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { format } from 'date-fns';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
-
-type PageContent = {
-  id: string;
-  key: string;
-  title: string;
-  content: string;
-  updatedAt: Date;
-};
+import { PageContent } from '@/prisma/client';
 
 export function AdminPages({ pages }: { pages: PageContent[] }) {
   const router = useRouter();

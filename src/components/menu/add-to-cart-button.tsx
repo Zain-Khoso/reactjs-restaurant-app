@@ -4,12 +4,7 @@ import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/shadcn/button';
 import { useCartStore } from '@/store/cart';
 
-type MenuItem = {
-  id: string;
-  name: string;
-  price: number;
-  image: string | null;
-};
+import { MenuItem } from '@/prisma/client';
 
 export function AddToCartButton({ item }: { item: MenuItem }) {
   const addItem = useCartStore((s) => s.addItem);

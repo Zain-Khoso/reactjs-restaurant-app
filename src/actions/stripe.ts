@@ -6,16 +6,9 @@ import prisma from '@/utils/prisma';
 import { getDeliveryFee } from './settings';
 import { sanitizeInput, sanitizeOptional } from '@/utils/sanitize';
 import { checkoutSchema } from '@/utils/validations';
+import { CartItem } from '@/store/cart';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  image: string | null;
-  quantity: number;
-};
 
 export async function createCheckoutSession(input: {
   items: CartItem[];
