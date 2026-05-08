@@ -5,8 +5,9 @@ import Image from 'next/image';
 // Component Imports
 import { Button } from '@/components/shadcn/button';
 import { H1, P } from '@/components/shadcn/typography';
-import { FadeIn } from '../animations';
+import { FadeIn } from '@/components/animations';
 
+// Component
 export function Hero() {
   return (
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center text-center px-4 py-20">

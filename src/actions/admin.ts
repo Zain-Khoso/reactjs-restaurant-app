@@ -1,11 +1,16 @@
 'use server';
 
+// Lib Imports
 import { revalidatePath } from 'next/cache';
-import { requireAdmin } from '@/utils/session';
+
+// Utils
 import prisma from '@/utils/prisma';
+import { requireAdmin } from '@/utils/session';
 import { sanitizeArray, sanitizeInput } from '@/utils/sanitize';
 import { menuItemSchema } from '@/utils/validations';
-import { MenuItem } from '@/prisma/client';
+
+// Types
+import { Chef, MenuItem, Testimonial } from '@/prisma/client';
 
 // ── Dashboard ─────────────────────────────────────────────────
 
@@ -230,7 +235,7 @@ export async function updatePageContent(key: string, data: { title: string; cont
 
 // ── Chefs ─────────────────────────────────────────────────────
 
-export async function getChefs() {
+export async function getChefs(): Promise<Chef[]> {
   try {
     return prisma.chef.findMany({
       where: { active: true },
@@ -305,7 +310,7 @@ export async function deleteChef(id: string) {
 
 // ── Testimonials ──────────────────────────────────────────────
 
-export async function getTestimonials() {
+export async function getTestimonials(): Promise<Testimonial[]> {
   try {
     return prisma.testimonial.findMany({
       where: { active: true },

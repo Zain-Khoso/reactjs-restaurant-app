@@ -33,6 +33,7 @@ const FEATURES = [
   },
 ];
 
+// Component
 export function Features() {
   return (
     <section className="py-16 px-4">

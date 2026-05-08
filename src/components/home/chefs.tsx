@@ -1,8 +1,8 @@
 // Lib Imports
 import Image from 'next/image';
-// Shadcn Imports
+
+// Components
 import { Card, CardContent } from '@/components/shadcn/card';
-// Typography
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { StaggerChildren, StaggerItem, FadeIn } from '../animations';
 import { Chef } from '@/prisma/client';

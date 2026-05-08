@@ -1,10 +1,10 @@
 // Lib Imports
 import Image from 'next/image';
 import Link from 'next/link';
-// Shadcn Imports
+
+// Components
 import { Button } from '@/components/shadcn/button';
 import { Separator } from '@/components/shadcn/separator';
-// Typography
 import { H2, P, SectionLabel } from '@/components/shadcn/typography';
 import { FadeIn, ScaleIn } from '../animations';
 
@@ -14,6 +14,7 @@ const STATS = [
   { value: '12', label: 'Popular Master Chefs' },
 ];
 
+// Component
 export function AboutSnippet() {
   return (
     <section className="py-16 px-4">

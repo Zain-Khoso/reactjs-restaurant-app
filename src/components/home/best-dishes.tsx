@@ -1,30 +1,34 @@
 'use client';
 
+// Lib Imports
 import Image from 'next/image';
-import Link from 'next/link';
+
+// Assets
+import { ShoppingCart, Zap } from 'lucide-react';
+
+// Utils
+import { useCartStore } from '@/store/cart';
+import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/utils/format';
+
+// Component
 import { Button } from '@/components/shadcn/button';
 import { Card, CardContent } from '@/components/shadcn/card';
 import { Badge } from '@/components/shadcn/badge';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { StaggerChildren, StaggerItem, FadeIn } from '@/components/animations';
-import { useCartStore } from '@/store/cart';
-import { ShoppingCart, Zap } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { formatCurrency } from '@/utils/format';
 
+// Types
 import { MenuItem } from '@/prisma/client';
 
+// Component
 export function BestDishes({ dishes }: { dishes: MenuItem[] }) {
-  const addItem = useCartStore((s) => s.addItem);
   const router = useRouter();
+  const addItem = useCartStore((s) => s.addItem);
 
-  const handleBuyNow = (dish: MenuItem) => {
-    addItem({
-      id: dish.id,
-      name: dish.name,
-      price: dish.price,
-      image: dish.image,
-    });
+  const handleBuyNow = function (dish: MenuItem) {
+    addItem(dish);
+
     router.push('/order');
   };
 

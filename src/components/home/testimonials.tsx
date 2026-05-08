@@ -1,7 +1,9 @@
 'use client';
 
-import * as React from 'react';
+// Lib Imports
 import Image from 'next/image';
+
+// Components
 import {
   Carousel,
   CarouselContent,
@@ -13,8 +15,10 @@ import { Card, CardContent } from '@/components/shadcn/card';
 import { H2, H4, Muted, SectionLabel } from '@/components/shadcn/typography';
 import { FadeIn } from '@/components/animations';
 
+// Types
 import { Testimonial } from '@/prisma/client';
 
+// Component
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
   return (
     <section className="py-16 px-4 bg-muted/40">

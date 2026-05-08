@@ -1,6 +1,10 @@
 'use server';
 
+// Utils
 import { prisma } from '@/utils/prisma';
+
+// Types
+import { MenuItemWithCategory } from '@/types';
 
 export async function getMenuItems() {
   return prisma.menuItem.findMany({
@@ -16,7 +20,7 @@ export async function getCategories() {
   });
 }
 
-export async function getFeaturedItems() {
+export async function getFeaturedItems(): Promise<MenuItemWithCategory[]> {
   try {
     return prisma.menuItem.findMany({
       where: { featured: true, available: true },
