@@ -1,17 +1,24 @@
 'use server';
 
+// Lib Imports
+import { revalidatePath } from 'next/cache';
+
+// Utils
 import prisma from '@/utils/prisma';
 import { requireAdmin } from '@/utils/session';
-import { revalidatePath } from 'next/cache';
+
+// DEFAULTS
+const DEFAULT_DELIVERY_FEE = 250;
 
 export async function getDeliveryFee(): Promise<number> {
   try {
     const setting = await prisma.settings.findUnique({
       where: { key: 'delivery_fee' },
     });
-    return setting ? parseInt(setting.value) : 150;
+
+    return setting ? parseInt(setting.value) : DEFAULT_DELIVERY_FEE;
   } catch {
-    return 150;
+    return DEFAULT_DELIVERY_FEE;
   }
 }
 

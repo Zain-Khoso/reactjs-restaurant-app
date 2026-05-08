@@ -1,5 +1,8 @@
+// Lib Imports
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+
+// Utils
 import prisma from '@/utils/prisma';
 
 export const auth = betterAuth({

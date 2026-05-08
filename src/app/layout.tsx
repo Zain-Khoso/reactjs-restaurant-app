@@ -1,15 +1,21 @@
+// Lib Imports
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
-import { ThemeProvider } from '@/components/providers/theme-provider';
-import './globals.css';
-import { UserProvider } from '@/components/providers/user-provider';
-import { SettingsProvider } from '@/components/providers/settings-providers';
 
+// Assets
+import './globals.css';
+
+// Components
+import { ThemeProvider } from '@/components/providers/theme';
+import { StoresProvider } from '@/components/providers/stores';
+
+// Font Setup
 const Font_Geist = Geist({
   variable: '--font-geist',
   subsets: ['latin'],
 });
 
+// Metadata
 export const metadata: Metadata = {
   title: {
     default: 'Urban Dish',
@@ -45,19 +51,20 @@ export const metadata: Metadata = {
   },
 };
 
+// Component
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${Font_Geist.variable} antialiased`} suppressHydrationWarning>
+    <html lang="en">
+      <body className={`${Font_Geist.variable} antialiased`}>
+        <StoresProvider />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <UserProvider>
-            <SettingsProvider>{children}</SettingsProvider>
-          </UserProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>
