@@ -1,7 +1,12 @@
+// Lib Imports
+import { ReactNode } from 'react';
+
+// Components
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+// Component
+export default function StaticLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar />

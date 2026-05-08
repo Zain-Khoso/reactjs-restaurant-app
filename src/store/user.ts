@@ -1,5 +1,8 @@
+// Lib Imports
 import { create } from 'zustand';
-import { User } from '@/utils/auth';
+
+// Types
+import { type User } from '@/utils/auth';
 
 type UserStore = {
   user: User | null;

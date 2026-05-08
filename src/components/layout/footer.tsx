@@ -19,7 +19,7 @@ const COMPANY_LINKS = [
 const SOCIAL_LINKS = [
   {
     label: 'Facebook',
-    href: 'https://facebook.com',
+    href: 'https://facebook.com/ZAIN1KHOSO',
     icon: (
       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
@@ -28,7 +28,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: 'YouTube',
-    href: 'https://youtube.com',
+    href: 'https://www.youtube.com/@gippity-8',
     icon: (
       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58a2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z" />
@@ -37,7 +37,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: 'Twitter',
-    href: 'https://twitter.com',
+    href: 'https://x.com/zainkhosodev',
     icon: (
       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -46,7 +46,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com',
+    href: 'https://linkedin.com/in/zain-khoso',
     icon: (
       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />

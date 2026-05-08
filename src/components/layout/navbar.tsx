@@ -1,17 +1,32 @@
 'use client';
 
 // Lib Imports
-import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { Menu, Sun, Moon, ExternalLink, LogIn, UserPlus } from 'lucide-react';
 import Image from 'next/image';
-import { CartDrawer } from '../cart/drawer';
-// Add these imports
+
+// Assets
+import {
+  Menu,
+  Sun,
+  Moon,
+  ExternalLink,
+  LogIn,
+  UserPlus,
+  User,
+  LogOut,
+  LayoutDashboard,
+} from 'lucide-react';
+
+// Utils
+import { cn } from '@/utils';
 import { signOut } from '@/utils/auth-client';
 import { useUserStore } from '@/store/user';
-import { User, LogOut, LayoutDashboard } from 'lucide-react';
+
+// Components
+import { CartDrawer } from '@/components/cart/drawer';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,14 +35,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar';
-
-// Util Imports
-import { cn } from '@/utils';
-
-// Component Imports
 import { Button } from '@/components/shadcn/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/shadcn/sheet';
-import { Separator } from '../shadcn/separator';
+import { Separator } from '@/components/shadcn/separator';
 
 const NAV_LINKS = [
   { label: 'About', href: '/about' },
@@ -44,11 +54,13 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
+
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const user = useUserStore((s) => s.user);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
